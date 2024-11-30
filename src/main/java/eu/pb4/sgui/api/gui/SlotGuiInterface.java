@@ -6,7 +6,6 @@ import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.virtual.inventory.VirtualScreenHandler;
 import eu.pb4.sgui.virtual.inventory.VirtualSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import org.jetbrains.annotations.ApiStatus;
@@ -65,6 +64,14 @@ public interface SlotGuiInterface extends SlotHolder, GuiInterface {
         return false;
     }
 
+    /**
+     * Whether spectators can click on slots.
+     *
+     * @return Returns true if spectators can use this gui.
+     */
+    default boolean canSpectatorsClick() {
+        return true;
+    }
 
     /**
      * Maps a hotbar index into a slot index.

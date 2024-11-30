@@ -1,5 +1,6 @@
 package eu.pb4.sgui.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.GuiHelpers;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
@@ -62,6 +63,10 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonNetworkH
         if (this.player.currentScreenHandler instanceof VirtualScreenHandler handler) {
             try {
                 var gui = handler.getGui();
+                if (this.player.isSpectator() && !gui.canSpectatorsClick()) {
+                    return;
+                }
+
                 int slot = packet.getSlot();
                 int button = packet.getButton();
 
@@ -98,6 +103,11 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonNetworkH
         } else if (this.player.currentScreenHandler instanceof BookScreenHandler) {
             ci.cancel();
         }
+    }
+
+    @ModifyExpressionValue(method = "onClickSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;isSpectator()Z"))
+    private boolean sgui$canSpectatorClickSlot(boolean isSpectator) {
+        return isSpectator && !(this.player.currentScreenHandler instanceof VirtualScreenHandler handler && handler.getGui().canSpectatorsClick());
     }
 
     @Inject(method = "onClickSlot", at = @At("TAIL"))
