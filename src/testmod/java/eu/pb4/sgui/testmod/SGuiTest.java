@@ -697,6 +697,15 @@ public class SGuiTest implements ModInitializer {
         return 0;
     }
 
+    private static int test14(CommandContext<ServerCommandSource> context) {
+        try {
+            new TypewriterGui(context.getSource().getPlayerOrThrow());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     private static int snake(CommandContext<ServerCommandSource> objectCommandContext) {
         try {
             ServerPlayerEntity player = objectCommandContext.getSource().getPlayer();
@@ -749,6 +758,9 @@ public class SGuiTest implements ModInitializer {
             );
             dispatcher.register(
                     literal("test13").executes(SGuiTest::test13)
+            );
+            dispatcher.register(
+                    literal("test14").executes(SGuiTest::test14)
             );
             dispatcher.register(
                     literal("snake").executes(SGuiTest::snake)

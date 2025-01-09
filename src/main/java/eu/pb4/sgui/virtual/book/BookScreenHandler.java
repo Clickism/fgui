@@ -23,11 +23,11 @@ public class BookScreenHandler extends ScreenHandler implements VirtualScreenHan
     public boolean onButtonClick(PlayerEntity player, int id) {
         switch (id) {
             case 1 -> {
-                this.gui.setPage(gui.getPage() - 1);
+                this.gui.onPreviousPageButton();
                 return true;
             }
             case 2 -> {
-                this.gui.setPage(gui.getPage() + 1);
+                this.gui.onNextPageButton();
                 return true;
             }
             case 3 -> {
@@ -36,7 +36,7 @@ public class BookScreenHandler extends ScreenHandler implements VirtualScreenHan
             }
         }
         if (id >= 100) {
-            this.gui.setPage(id - 100);
+            this.gui.onPageSelected(id - 100 + 1);
             return true;
         }
         return false;

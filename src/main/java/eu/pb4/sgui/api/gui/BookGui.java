@@ -43,11 +43,11 @@ public class BookGui implements GuiInterface {
      */
     public BookGui(ServerPlayerEntity player, ItemStack book) {
         this.player = player;
-
-        if (!book.getItem().getRegistryEntry().isIn(ItemTags.LECTERN_BOOKS)) {
-            throw new IllegalArgumentException("Item must be a book");
-        }
         this.book = book;
+    }
+
+    public BookGui(ServerPlayerEntity player) {
+        this(player, ItemStack.EMPTY);
     }
 
     /**
@@ -91,9 +91,45 @@ public class BookGui implements GuiInterface {
     }
 
     /**
+     * Updates the book.
+     */
+    public void setBook(ItemStack book) {
+        this.book = book;
+    }
+
+    /**
+     * Updates the book.
+     */
+    public void setBook(BookElementBuilder book) {
+        this.book = book.asStack();
+    }
+
+    /**
      * Activates when the 'Take Book' button is pressed
      */
     public void onTakeBookButton() {
+    }
+
+    /**
+     * Activates when player selects a page (via click event).
+     * The page passed is equal to one provided in click event!
+     */
+    public void onPageSelected(int page) {
+        this.setPage(page - 1);
+    }
+
+    /**
+     * Activates when player selects a page (via click event).
+     */
+    public void onNextPageButton() {
+        this.setPage(this.getPage() + 1);
+    }
+
+    /**
+     * Activates when player selects a page (via click event).
+     */
+    public void onPreviousPageButton() {
+        this.setPage(this.getPage() - 1);
     }
 
     @Override
