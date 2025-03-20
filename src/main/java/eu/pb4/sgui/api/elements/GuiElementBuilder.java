@@ -5,16 +5,18 @@ import com.mojang.authlib.minecraft.MinecraftProfileTextures;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import eu.pb4.sgui.api.GuiHelpers;
+import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.ProfileComponent;
-import net.minecraft.component.type.UnbreakableComponent;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
@@ -40,6 +42,8 @@ import java.util.*;
 public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementBuilder> {
     protected ItemStack itemStack = new ItemStack(Items.WHITE_DYE);
     protected GuiElement.ClickCallback callback = GuiElementInterface.EMPTY_CALLBACK;
+    private boolean hideComponentTooltips;
+    private boolean noTooltips;
 
     /**
      * Constructs a GuiElementBuilder with the default options
@@ -271,15 +275,7 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @return this element builder
      */
     public GuiElementBuilder hideDefaultTooltip() {
-        this.itemStack.apply(DataComponentTypes.TRIM, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
-        this.itemStack.apply(DataComponentTypes.UNBREAKABLE, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
-        this.itemStack.apply(DataComponentTypes.ENCHANTMENTS, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
-        this.itemStack.apply(DataComponentTypes.STORED_ENCHANTMENTS, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
-        this.itemStack.apply(DataComponentTypes.ATTRIBUTE_MODIFIERS, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
-        this.itemStack.apply(DataComponentTypes.DYED_COLOR, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
-        this.itemStack.apply(DataComponentTypes.CAN_BREAK, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
-        this.itemStack.apply(DataComponentTypes.CAN_PLACE_ON, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
-        this.itemStack.set(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE);
+        this.hideComponentTooltips = true;
         return this;
     }
 
@@ -288,7 +284,7 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @return this element builder
      */
     public GuiElementBuilder hideTooltip() {
-        this.itemStack.set(DataComponentTypes.HIDE_TOOLTIP, Unit.INSTANCE);
+        this.noTooltips = true;
         return this;
     }
 
@@ -380,7 +376,7 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @return this element builder
      */
     public GuiElementBuilder unbreakable() {
-        this.itemStack.set(DataComponentTypes.UNBREAKABLE, new UnbreakableComponent(true));
+        this.itemStack.set(DataComponentTypes.UNBREAKABLE, Unit.INSTANCE);
         return this;
     }
 
@@ -460,12 +456,25 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @see GuiElementBuilder#build()
      */
     public ItemStack asStack() {
-        return itemStack.copy();
+        var copy = itemStack.copy();
+        if (this.noTooltips) {
+            copy.set(DataComponentTypes.TOOLTIP_DISPLAY, new TooltipDisplayComponent(true, ReferenceSortedSets.emptySet()));
+        } else {
+            var comp = TooltipDisplayComponent.DEFAULT;
+            for (var entry : this.itemStack.getComponents()) {
+                if (entry.value() instanceof TooltipAppender && entry.type() != DataComponentTypes.LORE) {
+                    comp = comp.with(entry.type(), true);
+                }
+            }
+            copy.set(DataComponentTypes.TOOLTIP_DISPLAY, comp);
+        }
+
+        return copy;
     }
 
     @Override
     public GuiElement build() {
-        return new GuiElement(this.itemStack, this.callback);
+        return new GuiElement(this.asStack(), this.callback);
     }
 
     @Deprecated(forRemoval = true)

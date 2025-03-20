@@ -1,7 +1,10 @@
 package eu.pb4.sgui.api.gui;
 
 import eu.pb4.sgui.api.GuiHelpers;
+import eu.pb4.sgui.api.ScreenProperty;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -14,6 +17,7 @@ public abstract class BaseSlotGui implements SlotGuiInterface {
     protected boolean autoUpdate = true;
     protected boolean reOpen = false;
     protected final int size;
+    protected final IntList properties = new IntArrayList();
 
 
     public BaseSlotGui(ServerPlayerEntity player, int size) {
@@ -100,5 +104,23 @@ public abstract class BaseSlotGui implements SlotGuiInterface {
     @Override
     public ServerPlayerEntity getPlayer() {
         return this.player;
+    }
+
+    @Override
+    public void sendProperty(ScreenProperty property, int value) {
+        SlotGuiInterface.super.sendProperty(property, value);
+        while (this.properties.size() < property.id()) {
+            this.properties.add(0);
+        }
+        this.properties.set(property.id(), value);
+    }
+
+    @Override
+    public void sendRawProperty(int id, int value) {
+        SlotGuiInterface.super.sendRawProperty(id, value);
+        while (this.properties.size() < id) {
+            this.properties.add(0);
+        }
+        this.properties.set(id, value);
     }
 }

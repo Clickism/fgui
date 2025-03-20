@@ -5,16 +5,18 @@ import com.mojang.authlib.minecraft.MinecraftProfileTextures;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import eu.pb4.sgui.api.GuiHelpers;
+import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.ProfileComponent;
-import net.minecraft.component.type.UnbreakableComponent;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
@@ -45,6 +47,8 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
     protected GuiElement.ClickCallback callback = GuiElement.EMPTY_CALLBACK;
     protected int interval = 1;
     protected boolean random = false;
+    protected boolean hideComponentTooltips = false;
+    protected boolean noTooltips = false;
 
     /**
      * Constructs a AnimatedGuiElementBuilder with the default options
@@ -83,7 +87,7 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
      * @return this element builder
      */
     public AnimatedGuiElementBuilder saveItemStack() {
-        this.itemStacks.add(this.itemStack.copy());
+        this.itemStacks.add(this.asStack());
         this.itemStack = new ItemStack(Items.STONE);
         return this;
     }
@@ -255,15 +259,16 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
      * @return this element builder
      */
     public AnimatedGuiElementBuilder hideDefaultTooltip() {
-        this.itemStack.apply(DataComponentTypes.TRIM, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
-        this.itemStack.apply(DataComponentTypes.UNBREAKABLE, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
-        this.itemStack.apply(DataComponentTypes.ENCHANTMENTS, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
-        this.itemStack.apply(DataComponentTypes.STORED_ENCHANTMENTS, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
-        this.itemStack.apply(DataComponentTypes.ATTRIBUTE_MODIFIERS, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
-        this.itemStack.apply(DataComponentTypes.DYED_COLOR, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
-        this.itemStack.apply(DataComponentTypes.CAN_BREAK, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
-        this.itemStack.apply(DataComponentTypes.CAN_PLACE_ON, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
-        this.itemStack.set(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE);
+        this.hideComponentTooltips = true;
+        return this;
+    }
+
+    /**
+     * Hides tooltip completely, making it never show
+     * @return this element builder
+     */
+    public AnimatedGuiElementBuilder hideTooltip() {
+        this.noTooltips = true;
         return this;
     }
 
@@ -339,7 +344,7 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
      * @return this element builder
      */
     public AnimatedGuiElementBuilder unbreakable() {
-        this.itemStack.set(DataComponentTypes.UNBREAKABLE, new UnbreakableComponent(true));
+        this.itemStack.set(DataComponentTypes.UNBREAKABLE, Unit.INSTANCE);
         return this;
     }
 
@@ -436,7 +441,20 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
      * @see AnimatedGuiElementBuilder#build()
      */
     public ItemStack asStack() {
-        return this.itemStack.copy();
+        var copy = itemStack.copy();
+        if (this.noTooltips) {
+            copy.set(DataComponentTypes.TOOLTIP_DISPLAY, new TooltipDisplayComponent(true, ReferenceSortedSets.emptySet()));
+        } else {
+            var comp = TooltipDisplayComponent.DEFAULT;
+            for (var entry : this.itemStack.getComponents()) {
+                if (entry.value() instanceof TooltipAppender && entry.type() != DataComponentTypes.LORE) {
+                    comp = comp.with(entry.type(), true);
+                }
+            }
+            copy.set(DataComponentTypes.TOOLTIP_DISPLAY, comp);
+        }
+
+        return copy;
     }
 
     public AnimatedGuiElement build() {

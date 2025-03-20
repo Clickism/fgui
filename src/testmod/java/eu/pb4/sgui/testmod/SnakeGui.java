@@ -4,9 +4,12 @@ import eu.pb4.sgui.api.elements.GuiElement;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.layered.Layer;
 import eu.pb4.sgui.api.gui.layered.LayeredGui;
+import it.unimi.dsi.fastutil.objects.ReferenceSortedSet;
+import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
 import net.minecraft.block.entity.BannerPatterns;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BannerPatternsComponent;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.StringNbtReader;
@@ -26,7 +29,7 @@ public class SnakeGui extends LayeredGui {
     static ItemStack create(BannerPatternsComponent component) {
         ItemStack stack = Items.GRAY_BANNER.getDefaultStack();
         stack.set(DataComponentTypes.BANNER_PATTERNS, component);
-        stack.set(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE);
+        stack.set(DataComponentTypes.TOOLTIP_DISPLAY, new TooltipDisplayComponent(true, ReferenceSortedSets.emptySet()));
         return stack;
     }
 

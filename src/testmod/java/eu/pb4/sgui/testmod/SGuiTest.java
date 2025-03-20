@@ -199,10 +199,10 @@ public class SGuiTest implements ModInitializer {
                     .addPage(Text.literal("Test line one!"), Text.literal("Test line two!"))
                     .addPage(
                             Text.literal("Click to navigate to page: "),
-                            Text.literal("1").styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.CHANGE_PAGE, "1"))),
-                            Text.literal("2").styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.CHANGE_PAGE, "2"))),
-                            Text.literal("3").styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.CHANGE_PAGE, "3"))),
-                            Text.literal("Command").styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "Hello World!")))
+                            Text.literal("1").styled(style -> style.withClickEvent(new ClickEvent.ChangePage(1))),
+                            Text.literal("2").styled(style -> style.withClickEvent(new ClickEvent.ChangePage(2))),
+                            Text.literal("3").styled(style -> style.withClickEvent(new ClickEvent.ChangePage(3))),
+                            Text.literal("Command").styled(style -> style.withClickEvent(new ClickEvent.RunCommand("Hello World!")))
                     )
                     .addPage(Text.literal("This is page three!"))
                     .setTitle("The Test Book")

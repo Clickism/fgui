@@ -3,21 +3,28 @@ package eu.pb4.sgui.api.gui;
 import eu.pb4.sgui.api.GuiHelpers;
 import eu.pb4.sgui.api.elements.GuiElement;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
+import eu.pb4.sgui.mixin.ScreenHandlerAccessor;
 import eu.pb4.sgui.virtual.inventory.VirtualScreenHandler;
 import eu.pb4.sgui.virtual.SguiScreenHandlerFactory;
 import eu.pb4.sgui.virtual.inventory.VirtualSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
+import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
 import net.minecraft.recipe.NetworkRecipeId;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.sync.ItemStackHash;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+import java.util.ArrayList;
 import java.util.OptionalInt;
 
 /**
@@ -115,8 +122,19 @@ public class SimpleGui extends BaseSlotGui {
         this.title = title;
 
         if (this.isOpen()) {
-            this.player.networkHandler.sendPacket(new OpenScreenS2CPacket(this.syncId, this.type, title));
-            this.screenHandler.syncState();
+            var list = new ArrayList<Packet<? super ClientPlayPacketListener>>();
+            list.add(new OpenScreenS2CPacket(this.syncId, this.type, title));
+            list.add(new InventoryS2CPacket(this.syncId, this.screenHandler.getRevision(),
+                    this.screenHandler.getStacks(), this.screenHandler.getCursorStack()));
+            for (int i = 0; i < this.properties.size(); i++) {
+                list.add(new ScreenHandlerPropertyUpdateS2CPacket(this.syncId, i, this.properties.getInt(i)));
+            }
+
+            this.player.networkHandler.sendPacket(new BundleS2CPacket(list));
+            for (var i = 0; i < this.screenHandler.slots.size(); i++) {
+                this.screenHandler.setReceivedStack(i, this.screenHandler.slots.get(i).getStack().copy());
+            }
+            ((ScreenHandlerAccessor) this.screenHandler).getTrackedCursorSlot().setReceivedStack(this.screenHandler.getCursorStack());
         }
     }
 

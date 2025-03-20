@@ -67,25 +67,25 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonNetworkH
                     return;
                 }
 
-                int slot = packet.getSlot();
-                int button = packet.getButton();
+                int slot = packet.slot();
+                int button = packet.button();
 
-                ClickType type = ClickType.toClickType(packet.getActionType(), button, slot);
-                boolean ignore = gui.onAnyClick(slot, type, packet.getActionType());
+                ClickType type = ClickType.toClickType(packet.actionType(), button, slot);
+                boolean ignore = gui.onAnyClick(slot, type, packet.actionType());
                 if (ignore && !handler.getGui().getLockPlayerInventory() && (slot >= handler.getGui().getSize() || slot < 0 || handler.getGui().getSlotRedirect(slot) != null)) {
                     return;
                 }
 
                 this.player.currentScreenHandler.disableSyncing();
-                boolean bl = packet.getRevision() != this.player.currentScreenHandler.getRevision();
+                boolean bl = packet.revision() != this.player.currentScreenHandler.getRevision();
 
-                for (Int2ObjectMap.Entry<ItemStack> entry : Int2ObjectMaps.fastIterable(packet.getModifiedStacks())) {
-                    this.player.currentScreenHandler.setPreviousTrackedSlotMutable(entry.getIntKey(), entry.getValue());
+                for (var entry : Int2ObjectMaps.fastIterable(packet.modifiedStacks())) {
+                    this.player.currentScreenHandler.setReceivedHash(entry.getIntKey(), entry.getValue());
                 }
 
-                this.player.currentScreenHandler.setPreviousCursorStack(packet.getStack());
+                this.player.currentScreenHandler.setReceivedCursorHash(packet.cursor());
 
-                boolean allow = gui.click(slot, type, packet.getActionType());
+                boolean allow = gui.click(slot, type, packet.actionType());
 
                 this.player.currentScreenHandler.enableSyncing();
                 if (allow) {
@@ -114,9 +114,9 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonNetworkH
     private void sgui$resyncGui(ClickSlotC2SPacket packet, CallbackInfo ci) {
         if (this.player.currentScreenHandler instanceof VirtualScreenHandler handler) {
             try {
-                int slot = packet.getSlot();
-                int button = packet.getButton();
-                ClickType type = ClickType.toClickType(packet.getActionType(), button, slot);
+                int slot = packet.slot();
+                int button = packet.button();
+                ClickType type = ClickType.toClickType(packet.actionType(), button, slot);
 
                 if (type == ClickType.MOUSE_DOUBLE_CLICK || (type.isDragging && type.value == 2) || type.shift) {
                     GuiHelpers.sendPlayerScreenHandler(this.player);

@@ -282,7 +282,7 @@ public class HotbarGui extends BaseSlotGui {
         if ((this.isOpen() || screenHandlerIsClosed) && !this.reOpen) {
             if (!screenHandlerIsClosed && this.player.currentScreenHandler == this.screenHandler) {
                 this.player.closeHandledScreen();
-                this.player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(this.player.getInventory().selectedSlot));
+                this.player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(this.player.getInventory().getSelectedSlot()));
             }
 
             this.player.currentScreenHandler.syncState();

@@ -41,7 +41,7 @@ public class TypewriterGui extends BookGui {
             for (int i = 0; i < kl.length(); i++) {
                 var chr = kl.charAt(i);
                 text.append(Text.literal("" + chr).setStyle(
-                        Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.CHANGE_PAGE, "" + (1000 + chr)))));
+                        Style.EMPTY.withClickEvent(new ClickEvent.ChangePage (1000 + chr))));
                 text.append(" ");
                 line++;
             }
@@ -49,10 +49,10 @@ public class TypewriterGui extends BookGui {
         }
         text.append("   ");
         text.append(Text.literal("[SPACE]").setStyle(
-                Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.CHANGE_PAGE, "" + (1000 + ' ')))));
+                Style.EMPTY.withClickEvent(new ClickEvent.ChangePage (1000 + ' '))));
         text.append("   ");
         text.append(Text.literal("[<---]").setStyle(
-                Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.CHANGE_PAGE, "" + 100))));
+                Style.EMPTY.withClickEvent(new ClickEvent.ChangePage(100))));
 
         var book = new BookElementBuilder();
         book.addPage(text);
