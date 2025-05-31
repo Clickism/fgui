@@ -20,6 +20,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -185,6 +186,16 @@ public class HotbarGui extends BaseSlotGui {
         } else {
             this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_LEFT, SlotActionType.PICKUP);
         }
+        return false;
+    }
+
+    public boolean onPickItemFromBlock(BlockPos pos, boolean includeData) {
+        this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_MIDDLE, SlotActionType.CLONE);
+        return false;
+    }
+
+    public boolean onPickItemFromEntity(int entityId, boolean includeData) {
+        this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_MIDDLE, SlotActionType.CLONE);
         return false;
     }
 

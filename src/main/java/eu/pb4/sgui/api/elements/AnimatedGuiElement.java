@@ -22,10 +22,9 @@ public class AnimatedGuiElement implements GuiElementInterface {
     protected ItemStack[] items;
     protected int frame = 0;
     protected int tick = 0;
+    protected int lastTick = -1;
     protected final int changeEvery;
     protected final boolean random;
-    protected WeakHashMap<GuiInterface, TickAndFrame> ticks = new WeakHashMap<>();
-
     /**
      * Constructs an AnimatedGuiElement using the supplied options.
      *
@@ -81,7 +80,10 @@ public class AnimatedGuiElement implements GuiElementInterface {
     public ItemStack getItemStackForDisplay(GuiInterface gui) {
         int cFrame = this.frame;
 
-        this.tick += 1;
+        if (gui.getPlayer().getServer() != null && this.lastTick != gui.getPlayer().getServer().getTicks()) {
+            this.tick += 1;
+            this.lastTick = gui.getPlayer().getServer().getTicks();
+        }
         if (this.tick >= this.changeEvery) {
             this.tick = 0;
             this.frame += 1;
@@ -96,11 +98,5 @@ public class AnimatedGuiElement implements GuiElementInterface {
 
 
         return this.items[cFrame].copy();
-    }
-
-
-    protected static class TickAndFrame {
-        public int tick;
-        public int frame;
     }
 }

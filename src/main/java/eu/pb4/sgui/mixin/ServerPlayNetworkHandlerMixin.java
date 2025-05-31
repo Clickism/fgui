@@ -243,6 +243,26 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonNetworkH
         }
     }
 
+    @Inject(method = "onPickItemFromBlock", at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/server/world/ServerWorld;)V"), cancellable = true)
+    private void sgui$pickBlockHandler(PickItemFromBlockC2SPacket packet, CallbackInfo ci) {
+        if (this.player.currentScreenHandler instanceof HotbarScreenHandler screenHandler) {
+            var gui = screenHandler.getGui();
+            if (!gui.onPickItemFromBlock(packet.pos(), packet.includeData())) {
+                ci.cancel();
+            }
+        }
+    }
+
+    @Inject(method = "onPickItemFromEntity", at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/server/world/ServerWorld;)V"), cancellable = true)
+    private void sgui$pickEntityHandler(PickItemFromEntityC2SPacket packet, CallbackInfo ci) {
+        if (this.player.currentScreenHandler instanceof HotbarScreenHandler screenHandler) {
+            var gui = screenHandler.getGui();
+            if (!gui.onPickItemFromEntity(packet.id(), packet.includeData())) {
+                ci.cancel();
+            }
+        }
+    }
+
     @Inject(method = "onHandSwing", at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/server/world/ServerWorld;)V"), cancellable = true)
     private void sgui$clickHandSwing(HandSwingC2SPacket packet, CallbackInfo ci) {
         if (this.player.currentScreenHandler instanceof HotbarScreenHandler screenHandler) {

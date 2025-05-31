@@ -11,6 +11,8 @@ import net.minecraft.screen.slot.SlotActionType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public interface SlotGuiInterface extends SlotHolder, GuiInterface {
 
     /**
@@ -191,6 +193,58 @@ public interface SlotGuiInterface extends SlotHolder, GuiInterface {
                     i--;
                 } else {
                     i++;
+                }
+            }
+        }
+
+        return modified;
+    }
+
+   default boolean insertItem(ItemStack stack, List<Slot> slots, boolean fromLast) {
+        boolean modified = false;
+
+        if (fromLast) {
+            slots = slots.reversed();
+        }
+
+        if (stack.isStackable()) {
+            for (var slot : slots) {
+                if (stack.isEmpty()) {
+                    break;
+                }
+
+                if (slot.canInsert(stack)) {
+                    var stackInSlot = slot.getStack();
+                    if (!stackInSlot.isEmpty() && ItemStack.areItemsAndComponentsEqual(stack, stackInSlot)) {
+                        var totalCount = stackInSlot.getCount() + stack.getCount();
+                        var maxSize = slot.getMaxItemCount(stackInSlot);
+                        if (totalCount <= maxSize) {
+                            stack.setCount(0);
+                            stackInSlot.setCount(totalCount);
+                            slot.markDirty();
+                            modified = true;
+                        } else if (stackInSlot.getCount() < maxSize) {
+                            stack.decrement(maxSize - stackInSlot.getCount());
+                            stackInSlot.setCount(maxSize);
+                            slot.markDirty();
+                            modified = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!stack.isEmpty()) {
+            for (var slot : slots) {
+                if (slot.canInsert(stack)) {
+                    var stackInSlot = slot.getStack();
+                    if (stackInSlot.isEmpty() && slot.canInsert(stack)) {
+                        var maxSize = slot.getMaxItemCount(stack);
+                        slot.setStack(stack.split(Math.min(stack.getCount(), maxSize)));
+                        slot.markDirty();
+                        modified = true;
+                        break;
+                    }
                 }
             }
         }
