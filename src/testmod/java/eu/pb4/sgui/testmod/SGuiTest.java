@@ -58,7 +58,7 @@ public class SGuiTest implements ModInitializer {
 
                 @Override
                 public void onTick() {
-                    this.setSlot(0, new GuiElementBuilder(Items.ARROW).setCount((int) (player.getServerWorld().getTime() % 99999)).setMaxCount(99999));
+                    this.setSlot(0, new GuiElementBuilder(Items.ARROW).setCount((int) (player.getWorld().getTime() % 99999)).setMaxCount(99999));
                     super.onTick();
                 }
 
@@ -106,7 +106,7 @@ public class SGuiTest implements ModInitializer {
             );
 
             gui.setSlot(6, new GuiElementBuilder(Items.PLAYER_HEAD)
-                    .setSkullOwner(new GameProfile(UUID.fromString("f5a216d9-d660-4996-8d0f-d49053677676"), "patbox"), player.server)
+                    .setSkullOwner(new GameProfile(UUID.fromString("f5a216d9-d660-4996-8d0f-d49053677676"), "patbox"), player.getServer())
                     .setName(Text.literal("# Patbox's Head #"))
                     .glow()
             );
@@ -555,7 +555,7 @@ public class SGuiTest implements ModInitializer {
             );
 
             gui.setSlot(6, new GuiElementBuilder(Items.PLAYER_HEAD)
-                    .setSkullOwner(new GameProfile(UUID.fromString("f5a216d9-d660-4996-8d0f-d49053677676"), "patbox"), player.server)
+                    .setSkullOwner(new GameProfile(UUID.fromString("f5a216d9-d660-4996-8d0f-d49053677676"), "patbox"), player.getServer())
                     .setName(Text.literal("Patbox's Head"))
                     .glow()
             );

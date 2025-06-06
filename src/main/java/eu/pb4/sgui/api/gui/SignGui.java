@@ -166,7 +166,7 @@ public class SignGui implements GuiInterface {
             this.open = false;
             this.reOpen = false;
 
-            this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(player.getServerWorld(), signEntity.getPos()));
+            this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(player.getWorld(), signEntity.getPos()));
 
             if (alreadyClosed && this.player.currentScreenHandler == this.screenHandler) {
                 this.player.onHandledScreenClosed();
