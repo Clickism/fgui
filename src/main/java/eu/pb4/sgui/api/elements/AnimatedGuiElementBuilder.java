@@ -444,10 +444,10 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
         var copy = itemStack.copy();
         if (this.noTooltips) {
             copy.set(DataComponentTypes.TOOLTIP_DISPLAY, new TooltipDisplayComponent(true, ReferenceSortedSets.emptySet()));
-        } else {
+        } else if (this.hideComponentTooltips) {
             var comp = TooltipDisplayComponent.DEFAULT;
             for (var entry : this.itemStack.getComponents()) {
-                if (entry.value() instanceof TooltipAppender && entry.type() != DataComponentTypes.LORE) {
+                if (entry.type() != DataComponentTypes.ITEM_NAME && entry.type() != DataComponentTypes.CUSTOM_NAME && entry.type() != DataComponentTypes.LORE) {
                     comp = comp.with(entry.type(), true);
                 }
             }
