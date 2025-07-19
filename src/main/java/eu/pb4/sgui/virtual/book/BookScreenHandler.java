@@ -85,4 +85,14 @@ public class BookScreenHandler extends ScreenHandler implements VirtualScreenHan
     public BookGui getGui() {
         return gui;
     }
+
+    @Override
+    public void onClosed(PlayerEntity player) {
+        super.onClosed(player);
+        try {
+            this.getGui().onScreenHandlerClosed();
+        } catch (Throwable e) {
+            this.getGui().handleException(e);
+        }
+    }
 }

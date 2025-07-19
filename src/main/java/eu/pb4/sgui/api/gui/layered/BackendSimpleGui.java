@@ -30,6 +30,16 @@ class BackendSimpleGui extends SimpleGui {
     }
 
     @Override
+    public void onPlayerClose(boolean b) {
+        this.gui.onPlayerClose(false);
+    }
+
+    @Override
+    public void onScreenHandlerClosed() {
+        this.gui.onScreenHandlerClosed();
+    }
+
+    @Override
     public void onTick() {
         this.gui.onTick();
     }

@@ -123,4 +123,14 @@ public class VirtualScreenHandler extends ScreenHandler implements VirtualScreen
     protected boolean insertItem(ItemStack stack, int startIndex, int endIndex, boolean fromLast) {
         return this.gui.insertItem(stack, startIndex, endIndex, fromLast);
     }
+
+    @Override
+    public void onClosed(PlayerEntity player) {
+        super.onClosed(player);
+        try {
+            this.getGui().onScreenHandlerClosed();
+        } catch (Throwable e) {
+            this.getGui().handleException(e);
+        }
+    }
 }

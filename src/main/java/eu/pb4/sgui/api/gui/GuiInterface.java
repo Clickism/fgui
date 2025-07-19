@@ -6,7 +6,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings({"unused"})
@@ -71,10 +70,9 @@ public interface GuiInterface {
     /**
      * Used internally for closing the gui.
      *
-     * @param alreadyClosed Is set to true, if gui's ScreenHandler is already closed
+     * @param alreadyClosed Is set to true, if gui's ScreenHandler is already closed and close packet shouldn't be sent
      * @see GuiInterface#onClose()
      */
-    @ApiStatus.Internal
     void close(boolean alreadyClosed);
 
     /**
@@ -105,9 +103,25 @@ public interface GuiInterface {
     }
 
     /**
-     * Executes when the screen is closed
+     * Executes when the screen is closed with GuiInterface#close
+     * Which can be called by your code or outside of it.
      */
     default void onClose() {
+    }
+
+    /**
+     * Executes when the screen is closed by player
+     *
+     * @param success Whatever screen will be actually closed, or forcefully reopened. Depends on value of GuiInterface#canPlayerClose()
+     */
+    default void onPlayerClose(boolean success) {
+    }
+
+    /**
+     * Executes when the screen handler is closed.
+     * This method might be executed multiple times.
+     */
+    default void onScreenHandlerClosed() {
     }
 
     /**

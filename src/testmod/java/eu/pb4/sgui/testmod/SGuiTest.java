@@ -163,6 +163,7 @@ public class SGuiTest implements ModInitializer {
                 @Override
                 public void onClose() {
                     player.sendMessage(Text.literal(this.getInput()), false);
+                    super.onClose();
                 }
             };
 
@@ -325,6 +326,7 @@ public class SGuiTest implements ModInitializer {
                 @Override
                 public void onClose() {
                     this.player.sendMessage(Text.literal("Input was: " + this.getLine(0).toString()), false);
+                    super.onClose();
                 }
 
                 @Override
@@ -405,19 +407,7 @@ public class SGuiTest implements ModInitializer {
     private static int test8(CommandContext<ServerCommandSource> objectCommandContext) {
         try {
             ServerPlayerEntity player = objectCommandContext.getSource().getPlayer();
-            BookInputGui gui = new BookInputGui(player) {
-                @Override
-                public void onBookWritten(@Nullable String title, List<String> pages, boolean signed) {
-                    this.player.sendMessage(Text.literal("Title was: " + title), false);
-                    this.player.sendMessage(Text.literal("Page 0 was: " + pages.get(0)), false);
-                    this.player.sendMessage(Text.literal("Is signed: " + signed), false);
-                    super.onBookWritten(title, pages, signed);
-                }
-            };
 
-            gui.addPage("Hello world! How's you day?\nNew\nLine!");
-
-            gui.open();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -482,6 +472,7 @@ public class SGuiTest implements ModInitializer {
                 @Override
                 public void onClose() {
                     player.sendMessage(Text.literal("CLOSE!"), false);
+                    super.onClose();
                 }
 
                 @Override

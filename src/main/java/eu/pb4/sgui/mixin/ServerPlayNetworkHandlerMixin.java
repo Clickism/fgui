@@ -138,8 +138,10 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonNetworkH
             }
 
             if (handler.getGui().canPlayerClose()) {
+                handler.getGui().onPlayerClose(true);
                 this.sgui$previousScreen = this.player.currentScreenHandler;
             } else {
+                handler.getGui().onPlayerClose(false);
                 var screenHandler = this.player.currentScreenHandler;
                 try {
                     if (screenHandler.getType() != null) {

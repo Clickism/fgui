@@ -42,4 +42,14 @@ public class FakeScreenHandler extends ScreenHandler implements VirtualScreenHan
     public ItemStack quickMove(PlayerEntity player, int index) {
         return ItemStack.EMPTY;
     }
+
+    @Override
+    public void onClosed(PlayerEntity player) {
+        super.onClosed(player);
+        try {
+            this.getGui().onScreenHandlerClosed();
+        } catch (Throwable e) {
+            this.getGui().handleException(e);
+        }
+    }
 }
