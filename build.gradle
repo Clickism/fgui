@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.10.+'
+	id 'fabric-loom' version '1.11.+'
 	id 'maven-publish'
 }
 
@@ -28,6 +28,8 @@ sourceSets {
 }
 
 loom {
+	accessWidenerPath = file("src/main/resources/sgui.accesswidener")
+
 	runs {
 		testmodClient {
 			client()

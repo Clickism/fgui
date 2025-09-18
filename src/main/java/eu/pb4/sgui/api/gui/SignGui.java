@@ -57,7 +57,7 @@ public class SignGui implements GuiInterface {
      */
     public SignGui(ServerPlayerEntity player)  {
         this.player = player;
-        this.signEntity = new VirtualSignBlockEntity(player.getWorld(), new BlockPos(player.getBlockPos().getX(), Math.min(player.getWorld().getTopYInclusive(), player.getBlockPos().getY() + 5), player.getBlockPos().getZ()), Blocks.OAK_SIGN.getDefaultState());
+        this.signEntity = new VirtualSignBlockEntity(player.getEntityWorld(), new BlockPos(player.getBlockPos().getX(), Math.min(player.getEntityWorld().getTopYInclusive(), player.getBlockPos().getY() + 5), player.getBlockPos().getZ()), Blocks.OAK_SIGN.getDefaultState());
     }
 
     /**
@@ -166,7 +166,7 @@ public class SignGui implements GuiInterface {
             this.open = false;
             this.reOpen = false;
 
-            this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(player.getWorld(), signEntity.getPos()));
+            this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(player.getEntityWorld(), signEntity.getPos()));
 
             if (alreadyClosed && this.player.currentScreenHandler == this.screenHandler) {
                 this.player.onHandledScreenClosed();

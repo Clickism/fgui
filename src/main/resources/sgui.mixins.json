@@ -10,7 +10,8 @@
     "ServerPlayerEntityAccessor",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
-    "SignBlockEntityAccessor"
+    "SignBlockEntityAccessor",
+    "StaticAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

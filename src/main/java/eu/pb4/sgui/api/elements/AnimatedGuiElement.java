@@ -80,9 +80,9 @@ public class AnimatedGuiElement implements GuiElementInterface {
     public ItemStack getItemStackForDisplay(GuiInterface gui) {
         int cFrame = this.frame;
 
-        if (gui.getPlayer().getServer() != null && this.lastTick != gui.getPlayer().getServer().getTicks()) {
+        if (gui.getPlayer().getEntityWorld().getServer() != null && this.lastTick != gui.getPlayer().getEntityWorld().getServer().getTicks()) {
             this.tick += 1;
-            this.lastTick = gui.getPlayer().getServer().getTicks();
+            this.lastTick = gui.getPlayer().getEntityWorld().getServer().getTicks();
         }
         if (this.tick >= this.changeEvery) {
             this.tick = 0;

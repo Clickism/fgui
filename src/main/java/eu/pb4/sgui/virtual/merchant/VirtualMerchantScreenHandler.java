@@ -82,7 +82,7 @@ public class VirtualMerchantScreenHandler extends VirtualScreenHandler {
     public void onClosed(PlayerEntity playerEntity) {
         super.onClosed(playerEntity);
         this.merchant.setCustomer(null);
-        if (!playerEntity.getWorld().isClient) {
+        if (!playerEntity.getEntityWorld().isClient()) {
             if (!playerEntity.isAlive() || playerEntity instanceof ServerPlayerEntity && ((ServerPlayerEntity)playerEntity).isDisconnected()) {
                 ItemStack itemStack = this.merchantInventory.removeStack(0);
                 if (!itemStack.isEmpty()) {

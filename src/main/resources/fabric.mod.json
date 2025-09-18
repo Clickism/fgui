@@ -21,6 +21,7 @@
   "entrypoints": {
 
   },
+  "accessWidener": "sgui.accesswidener",
   "mixins": [
     "sgui.mixins.json"
   ],

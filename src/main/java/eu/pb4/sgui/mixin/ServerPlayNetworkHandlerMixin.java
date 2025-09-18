@@ -294,9 +294,9 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonNetworkH
                 var pos = packet.getBlockHitResult().getBlockPos();
                 handler.syncSelectedSlot();
 
-                this.sendPacket(new BlockUpdateS2CPacket(pos, this.player.getWorld().getBlockState(pos)));
+                this.sendPacket(new BlockUpdateS2CPacket(pos, this.player.getEntityWorld().getBlockState(pos)));
                 pos = pos.offset(packet.getBlockHitResult().getSide());
-                this.sendPacket(new BlockUpdateS2CPacket(pos, this.player.getWorld().getBlockState(pos)));
+                this.sendPacket(new BlockUpdateS2CPacket(pos, this.player.getEntityWorld().getBlockState(pos)));
                 this.sendPacket(new PlayerActionResponseS2CPacket(packet.getSequence()));
 
                 ci.cancel();
@@ -316,9 +316,9 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonNetworkH
                     handler.syncOffhandSlot();
                 }
 
-                this.sendPacket(new BlockUpdateS2CPacket(pos, this.player.getWorld().getBlockState(pos)));
+                this.sendPacket(new BlockUpdateS2CPacket(pos, this.player.getEntityWorld().getBlockState(pos)));
                 pos = pos.offset(packet.getDirection());
-                this.sendPacket(new BlockUpdateS2CPacket(pos, this.player.getWorld().getBlockState(pos)));
+                this.sendPacket(new BlockUpdateS2CPacket(pos, this.player.getEntityWorld().getBlockState(pos)));
                 this.sendPacket(new PlayerActionResponseS2CPacket(packet.getSequence()));
                 ci.cancel();
             }

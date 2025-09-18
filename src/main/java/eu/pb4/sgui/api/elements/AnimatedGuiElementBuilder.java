@@ -1,11 +1,17 @@
 package eu.pb4.sgui.api.elements;
 
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableMultimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTextures;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
+import com.mojang.datafixers.util.Either;
 import eu.pb4.sgui.api.GuiHelpers;
+import eu.pb4.sgui.mixin.StaticAccessor;
 import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
+import net.minecraft.client.ClientAssets;
+import net.minecraft.client.util.SkinTextures;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
@@ -26,6 +32,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.Unit;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -357,21 +364,68 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
      * server load the textures.
      *
      * @param profile the {@link GameProfile} of the owner
-     * @param server  the server instance, used to get the textures
      * @return this element builder
      */
-    public AnimatedGuiElementBuilder setSkullOwner(GameProfile profile, @Nullable MinecraftServer server) {
-        if (profile.getId() != null && server != null) {
-            if (server.getSessionService().getTextures(profile) == MinecraftProfileTextures.EMPTY) {
-                var tmp = server.getSessionService().fetchProfile(profile.getId(), false);
-                if (tmp != null) {
-                    profile = tmp.profile();
-                }
-            }
-
+    public AnimatedGuiElementBuilder setProfile(GameProfile profile) {
+        if (!profile.properties().isEmpty()) {
+            return this.setProfile(ProfileComponent.ofStatic(profile));
         }
-        this.itemStack.set(DataComponentTypes.PROFILE, new ProfileComponent(profile));
+        if (profile.name().isEmpty()) {
+            return this.setProfile(ProfileComponent.ofDynamic(profile.id()));
+        }
+        if (profile.id().equals(Util.NIL_UUID)) {
+            return this.setProfile(ProfileComponent.method_74889(profile.name()));
+        }
         return this;
+    }
+
+    public AnimatedGuiElementBuilder setProfile(String name) {
+        return this.setProfile(ProfileComponent.method_74889(name));
+    }
+
+    public AnimatedGuiElementBuilder setProfile(UUID uuid) {
+        return this.setProfile(ProfileComponent.ofDynamic(uuid));
+    }
+
+    public AnimatedGuiElementBuilder setProfile(Identifier textureId) {
+        return this.setProfile(StaticAccessor.createStatic(Either.right(ProfileComponent.Data.field_63032),
+                new SkinTextures.MannequinInfo(Optional.of(new ClientAssets.AssetInfo(textureId)), Optional.empty(),
+                        Optional.empty(), Optional.empty())));
+    }
+
+    public AnimatedGuiElementBuilder setProfile(SkinTextures.MannequinInfo info) {
+        return this.setProfile(StaticAccessor.createStatic(Either.right(ProfileComponent.Data.field_63032), info));
+    }
+
+    public AnimatedGuiElementBuilder setProfile(ProfileComponent component) {
+        this.itemStack.set(DataComponentTypes.PROFILE, component);
+        return this;
+    }
+
+
+    public AnimatedGuiElementBuilder setProfileSkinTexture(String value) {
+        return this.setProfileSkinTexture(value, null, null);
+    }
+
+    public AnimatedGuiElementBuilder setProfileSkinTexture(String value, @Nullable String signature, @Nullable UUID uuid) {
+        PropertyMap map = new PropertyMap(ImmutableMultimap.of("textures", new Property("textures", value, signature)));
+        return this.setProfile(new GameProfile( uuid != null ? uuid : Util.NIL_UUID, "", map));
+    }
+
+    /**
+     * Sets the skull owner tag of a player head.
+     * If the server parameter is not supplied it may lag the client while it loads the texture,
+     * otherwise if the server is provided and the {@link GameProfile} contains a UUID then the
+     * textures will be loaded by the server. This can take some time the first load,
+     * however the skins are cached for later uses so its often less noticeable to let the
+     * server load the textures.
+     *
+     * @param profile the {@link GameProfile} of the owner
+     * @return this element builder
+     */
+    @Deprecated
+    public AnimatedGuiElementBuilder setSkullOwner(GameProfile profile, @Nullable MinecraftServer server) {
+        return this.setProfile(profile);
     }
 
     /**
@@ -382,6 +436,7 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
      * @param value     texture value used by client
      * @return this element builder
      */
+    @Deprecated
     public AnimatedGuiElementBuilder setSkullOwner(String value) {
         return this.setSkullOwner(value, null, null);
     }
@@ -396,11 +451,9 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
      * @param uuid      UUID of skin owner, if null default will be used
      * @return this element builder
      */
+    @Deprecated
     public AnimatedGuiElementBuilder setSkullOwner(String value, @Nullable String signature, @Nullable UUID uuid) {
-        PropertyMap map = new PropertyMap();
-        map.put("textures", new Property("textures", value, signature));
-        this.itemStack.set(DataComponentTypes.PROFILE, new ProfileComponent(Optional.empty(), Optional.ofNullable(uuid), map));
-        return this;
+        return this.setProfileSkinTexture(value, signature, uuid);
     }
 
     /**
