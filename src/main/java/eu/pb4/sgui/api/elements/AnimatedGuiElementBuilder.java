@@ -10,8 +10,6 @@ import com.mojang.datafixers.util.Either;
 import eu.pb4.sgui.api.GuiHelpers;
 import eu.pb4.sgui.mixin.StaticAccessor;
 import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
-import net.minecraft.client.ClientAssets;
-import net.minecraft.client.util.SkinTextures;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
@@ -19,6 +17,7 @@ import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.player.SkinTextures;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -29,10 +28,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Rarity;
-import net.minecraft.util.Unit;
-import net.minecraft.util.Util;
+import net.minecraft.util.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -374,13 +370,13 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
             return this.setProfile(ProfileComponent.ofDynamic(profile.id()));
         }
         if (profile.id().equals(Util.NIL_UUID)) {
-            return this.setProfile(ProfileComponent.method_74889(profile.name()));
+            return this.setProfile(ProfileComponent.ofDynamic(profile.name()));
         }
         return this;
     }
 
     public AnimatedGuiElementBuilder setProfile(String name) {
-        return this.setProfile(ProfileComponent.method_74889(name));
+        return this.setProfile(ProfileComponent.ofDynamic(name));
     }
 
     public AnimatedGuiElementBuilder setProfile(UUID uuid) {
@@ -388,13 +384,13 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
     }
 
     public AnimatedGuiElementBuilder setProfile(Identifier textureId) {
-        return this.setProfile(StaticAccessor.createStatic(Either.right(ProfileComponent.Data.field_63032),
-                new SkinTextures.MannequinInfo(Optional.of(new ClientAssets.AssetInfo(textureId)), Optional.empty(),
+        return this.setProfile(StaticAccessor.createStatic(Either.right(ProfileComponent.Data.EMPTY),
+                new SkinTextures.SkinOverride(Optional.of(new AssetInfo.TextureAssetInfo(textureId)), Optional.empty(),
                         Optional.empty(), Optional.empty())));
     }
 
-    public AnimatedGuiElementBuilder setProfile(SkinTextures.MannequinInfo info) {
-        return this.setProfile(StaticAccessor.createStatic(Either.right(ProfileComponent.Data.field_63032), info));
+    public AnimatedGuiElementBuilder setProfile(SkinTextures.SkinOverride info) {
+        return this.setProfile(StaticAccessor.createStatic(Either.right(ProfileComponent.Data.EMPTY), info));
     }
 
     public AnimatedGuiElementBuilder setProfile(ProfileComponent component) {
