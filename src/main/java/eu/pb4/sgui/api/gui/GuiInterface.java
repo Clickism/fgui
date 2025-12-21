@@ -138,6 +138,9 @@ public interface GuiInterface {
         throwable.printStackTrace();
     }
 
+    default boolean onButtonClick(int id) {
+        return false;
+    }
 
     /**
      * Send additional properties to the GUI.

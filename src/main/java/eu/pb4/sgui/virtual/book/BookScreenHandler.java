@@ -21,6 +21,9 @@ public class BookScreenHandler extends ScreenHandler implements VirtualScreenHan
 
     @Override
     public boolean onButtonClick(PlayerEntity player, int id) {
+        if (this.gui.onButtonClick(id)) {
+            return true;
+        }
         switch (id) {
             case 1 -> {
                 this.gui.onPreviousPageButton();

@@ -109,7 +109,7 @@ public abstract class BaseSlotGui implements SlotGuiInterface {
     @Override
     public void sendProperty(ScreenProperty property, int value) {
         SlotGuiInterface.super.sendProperty(property, value);
-        while (this.properties.size() < property.id()) {
+        while (this.properties.size() <= property.id()) {
             this.properties.add(0);
         }
         this.properties.set(property.id(), value);
@@ -118,7 +118,7 @@ public abstract class BaseSlotGui implements SlotGuiInterface {
     @Override
     public void sendRawProperty(int id, int value) {
         SlotGuiInterface.super.sendRawProperty(id, value);
-        while (this.properties.size() < id) {
+        while (this.properties.size() <= id) {
             this.properties.add(0);
         }
         this.properties.set(id, value);

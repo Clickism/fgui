@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.context.CommandContext;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.GuiHelpers;
+import eu.pb4.sgui.api.ScreenProperty;
 import eu.pb4.sgui.api.elements.*;
 import eu.pb4.sgui.api.gui.*;
 import eu.pb4.sgui.api.gui.layered.Layer;
@@ -17,7 +18,13 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.NetworkRecipeId;
+import net.minecraft.recipe.StonecuttingRecipe;
+import net.minecraft.recipe.display.CuttingRecipeDisplay;
+import net.minecraft.recipe.display.SlotDisplay;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.screen.slot.Slot;
@@ -35,7 +42,9 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -699,6 +708,42 @@ public class SGuiTest implements ModInitializer {
         return 0;
     }
 
+    private static int test15(CommandContext<ServerCommandSource> context) {
+        try {
+            var player = context.getSource().getPlayerOrThrow();
+            var serverRecipeManager = player.getEntityWorld().getRecipeManager();
+
+            var gui = new SimpleGui(ScreenHandlerType.STONECUTTER, player, false) {
+                @Override
+                public boolean onButtonClick(int id) {
+                    this.setSlot(1, Registries.ITEM.get(id).getDefaultStack());
+                    this.sendProperty(ScreenProperty.SELECTED, id);
+                    return true;
+                }
+
+                @Override
+                public void onClose() {
+                    player.networkHandler.sendPacket(new SynchronizeRecipesS2CPacket(serverRecipeManager.getPropertySets(), serverRecipeManager.getStonecutterRecipeForSync()));
+                    super.onClose();
+                }
+            };
+
+            gui.setSlot(0, new GuiElementBuilder(Items.STONE));
+
+            var list = new ArrayList<CuttingRecipeDisplay.GroupEntry<StonecuttingRecipe>>();
+
+            for (var item : Registries.ITEM) {
+                list.add(new CuttingRecipeDisplay.GroupEntry<>(Ingredient.ofItem(Items.STONE),
+                        new CuttingRecipeDisplay<>(new SlotDisplay.ItemSlotDisplay(item), Optional.empty())));
+            }
+            player.networkHandler.sendPacket(new SynchronizeRecipesS2CPacket(serverRecipeManager.getPropertySets(), new CuttingRecipeDisplay.Grouping<>(list)));
+            gui.open();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     private static int snake(CommandContext<ServerCommandSource> objectCommandContext) {
         try {
             ServerPlayerEntity player = objectCommandContext.getSource().getPlayer();
@@ -754,6 +799,9 @@ public class SGuiTest implements ModInitializer {
             );
             dispatcher.register(
                     literal("test14").executes(SGuiTest::test14)
+            );
+            dispatcher.register(
+                    literal("test15").executes(SGuiTest::test15)
             );
             dispatcher.register(
                     literal("snake").executes(SGuiTest::snake)

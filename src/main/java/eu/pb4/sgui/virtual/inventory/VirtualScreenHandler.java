@@ -125,6 +125,11 @@ public class VirtualScreenHandler extends ScreenHandler implements VirtualScreen
     }
 
     @Override
+    public boolean onButtonClick(PlayerEntity player, int id) {
+        return this.gui.onButtonClick(id);
+    }
+
+    @Override
     public void onClosed(PlayerEntity player) {
         super.onClosed(player);
         try {
