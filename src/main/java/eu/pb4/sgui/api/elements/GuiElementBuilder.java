@@ -9,25 +9,27 @@ import com.mojang.datafixers.util.Either;
 import eu.pb4.sgui.api.GuiHelpers;
 import eu.pb4.sgui.mixin.StaticAccessor;
 import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
-import net.minecraft.component.ComponentType;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.CustomModelDataComponent;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.component.type.ProfileComponent;
-import net.minecraft.component.type.TooltipDisplayComponent;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.player.SkinTextures;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.tooltip.TooltipAppender;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.core.ClientAsset;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.Text;
 import net.minecraft.util.*;
+import net.minecraft.world.entity.player.PlayerSkin;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.component.CustomModelData;
+import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.component.ResolvableProfile;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.enchantment.Enchantment;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -102,8 +104,8 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
     }
 
     @Deprecated
-    public static List<Text> getLore(ItemStack stack) {
-        return stack.getOrDefault(DataComponentTypes.LORE, LoreComponent.DEFAULT).lines();
+    public static List<Component> getLore(ItemStack stack) {
+        return stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).lines();
     }
 
     /**
@@ -113,7 +115,7 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @return this element builder
      */
     public GuiElementBuilder setItem(Item item) {
-        this.itemStack = new ItemStack(item.getRegistryEntry(), this.itemStack.getCount(), this.itemStack.getComponentChanges());
+        this.itemStack = new ItemStack(item.builtInRegistryHolder(), this.itemStack.getCount(), this.itemStack.getComponentsPatch());
         return this;
     }
 
@@ -123,8 +125,8 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @param name the name to use
      * @return this element builder
      */
-    public GuiElementBuilder setName(Text name) {
-        this.itemStack.set(DataComponentTypes.CUSTOM_NAME, name.copy().styled(GuiHelpers.STYLE_CLEARER));
+    public GuiElementBuilder setName(Component name) {
+        this.itemStack.set(DataComponents.CUSTOM_NAME, name.copy().withStyle(GuiHelpers.STYLE_CLEARER));
         return this;
     }
 
@@ -134,8 +136,8 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @param name the name to use
      * @return this element builder
      */
-    public GuiElementBuilder setItemName(Text name) {
-        this.itemStack.set(DataComponentTypes.ITEM_NAME, name.copy());
+    public GuiElementBuilder setItemName(Component name) {
+        this.itemStack.set(DataComponents.ITEM_NAME, name.copy());
         return this;
     }
 
@@ -146,7 +148,7 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @return this element builder
      */
     public GuiElementBuilder setRarity(Rarity rarity) {
-        this.itemStack.set(DataComponentTypes.RARITY, rarity);
+        this.itemStack.set(DataComponents.RARITY, rarity);
         return this;
     }
 
@@ -169,7 +171,7 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @return this element builder
      */
     public GuiElementBuilder setMaxCount(int count) {
-        this.itemStack.set(DataComponentTypes.MAX_STACK_SIZE, count);
+        this.itemStack.set(DataComponents.MAX_STACK_SIZE, count);
         return this;
     }
 
@@ -179,13 +181,13 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @param lore a list of all the lore lines
      * @return this element builder
      */
-    public GuiElementBuilder setLore(List<Text> lore) {
-        var l = new ArrayList<Text>(lore.size());
+    public GuiElementBuilder setLore(List<Component> lore) {
+        var l = new ArrayList<Component>(lore.size());
         for (var t : lore) {
-            l.add(t.copy().styled(GuiHelpers.STYLE_CLEARER));
+            l.add(t.copy().withStyle(GuiHelpers.STYLE_CLEARER));
         }
 
-        this.itemStack.set(DataComponentTypes.LORE, new LoreComponent(l));
+        this.itemStack.set(DataComponents.LORE, new ItemLore(l));
         return this;
     }
 
@@ -195,8 +197,8 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @param lore a list of all the lore lines
      * @return this element builder
      */
-    public GuiElementBuilder setLoreRaw(List<Text> lore) {
-        this.itemStack.set(DataComponentTypes.LORE, new LoreComponent(lore));
+    public GuiElementBuilder setLoreRaw(List<Component> lore) {
+        this.itemStack.set(DataComponents.LORE, new ItemLore(lore));
         return this;
     }
 
@@ -206,8 +208,8 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @param lore the line to add
      * @return this element builder
      */
-    public GuiElementBuilder addLoreLine(Text lore) {
-        this.itemStack.apply(DataComponentTypes.LORE, LoreComponent.DEFAULT, lore.copy().styled(GuiHelpers.STYLE_CLEARER), LoreComponent::with);
+    public GuiElementBuilder addLoreLine(Component lore) {
+        this.itemStack.update(DataComponents.LORE, ItemLore.EMPTY, lore.copy().withStyle(GuiHelpers.STYLE_CLEARER), ItemLore::withLineAdded);
         return this;
     }
 
@@ -217,8 +219,8 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @param lore the line to add
      * @return this element builder
      */
-    public GuiElementBuilder addLoreLineRaw(Text lore) {
-        this.itemStack.apply(DataComponentTypes.LORE, LoreComponent.DEFAULT, lore, LoreComponent::with);
+    public GuiElementBuilder addLoreLineRaw(Component lore) {
+        this.itemStack.update(DataComponents.LORE, ItemLore.EMPTY, lore, ItemLore::withLineAdded);
         return this;
     }
 
@@ -230,7 +232,7 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @return this element builder
      */
     public GuiElementBuilder setDamage(int damage) {
-        this.itemStack.set(DataComponentTypes.DAMAGE, damage);
+        this.itemStack.set(DataComponents.DAMAGE, damage);
         return this;
     }
 
@@ -241,7 +243,7 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @return this element builder
      */
     public GuiElementBuilder setMaxDamage(int damage) {
-        this.itemStack.set(DataComponentTypes.MAX_DAMAGE, damage);
+        this.itemStack.set(DataComponents.MAX_DAMAGE, damage);
         return this;
     }
 
@@ -250,8 +252,8 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @return this element builder
      */
     public GuiElementBuilder noDefaults() {
-        for (var x : this.itemStack.getItem().getComponents()) {
-            if (x.type() == DataComponentTypes.ITEM_MODEL) {
+        for (var x : this.itemStack.getItem().components()) {
+            if (x.type() == DataComponents.ITEM_MODEL) {
                 continue;
             }
             if (this.itemStack.get(x.type()) == x.value()) {
@@ -262,11 +264,11 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
     }
 
     @Nullable
-    public <T> T getComponent(ComponentType<T> type) {
+    public <T> T getComponent(DataComponentType<T> type) {
         return this.itemStack.get(type);
     }
 
-    public <T> GuiElementBuilder setComponent(ComponentType<T> type, @Nullable T value) {
+    public <T> GuiElementBuilder setComponent(DataComponentType<T> type, @Nullable T value) {
         this.itemStack.set(type, value);
         return this;
     }
@@ -297,8 +299,8 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @param level       the level of the specified enchantment
      * @return this element builder
      */
-    public GuiElementBuilder enchant(RegistryEntry<Enchantment> enchantment, int level) {
-        this.itemStack.addEnchantment(enchantment, level);
+    public GuiElementBuilder enchant(Holder<Enchantment> enchantment, int level) {
+        this.itemStack.enchant(enchantment, level);
         return this;
     }
 
@@ -310,8 +312,8 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @param level       the level of the specified enchantment
      * @return this element builder
      */
-    public GuiElementBuilder enchant(MinecraftServer server, RegistryKey<Enchantment> enchantment, int level) {
-        return enchant(server.getRegistryManager(), enchantment, level);
+    public GuiElementBuilder enchant(MinecraftServer server, ResourceKey<Enchantment> enchantment, int level) {
+        return enchant(server.registryAccess(), enchantment, level);
     }
 
     /**
@@ -322,8 +324,8 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @param level       the level of the specified enchantment
      * @return this element builder
      */
-    public GuiElementBuilder enchant(RegistryWrapper.WrapperLookup lookup, RegistryKey<Enchantment> enchantment, int level) {
-        return enchant(lookup.getOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(enchantment), level);
+    public GuiElementBuilder enchant(HolderLookup.Provider lookup, ResourceKey<Enchantment> enchantment, int level) {
+        return enchant(lookup.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(enchantment), level);
     }
 
     /**
@@ -332,7 +334,7 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @return this element builder
      */
     public GuiElementBuilder glow() {
-        this.itemStack.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
+        this.itemStack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
         return this;
     }
 
@@ -342,7 +344,7 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @return this element builder
      */
     public GuiElementBuilder glow(boolean value) {
-        this.itemStack.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, value);
+        this.itemStack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, value);
         return this;
     }
 
@@ -352,7 +354,7 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @return this element builder
      */
     public GuiElementBuilder setCustomModelData(List<Float> floats, List<Boolean> flags, List<String> strings, List<Integer> colors) {
-        this.itemStack.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(floats, flags, strings, colors));
+        this.itemStack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(floats, flags, strings, colors));
         return this;
     }
 
@@ -363,12 +365,12 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @return this element builder
      */
     public GuiElementBuilder model(Identifier model) {
-        this.itemStack.set(DataComponentTypes.ITEM_MODEL, model);
+        this.itemStack.set(DataComponents.ITEM_MODEL, model);
         return this;
     }
 
     public GuiElementBuilder model(Item model) {
-        this.itemStack.set(DataComponentTypes.ITEM_MODEL, model.getComponents().get(DataComponentTypes.ITEM_MODEL));
+        this.itemStack.set(DataComponents.ITEM_MODEL, model.components().get(DataComponents.ITEM_MODEL));
         return this;
     }
 
@@ -378,7 +380,7 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      * @return this element builder
      */
     public GuiElementBuilder unbreakable() {
-        this.itemStack.set(DataComponentTypes.UNBREAKABLE, Unit.INSTANCE);
+        this.itemStack.set(DataComponents.UNBREAKABLE, Unit.INSTANCE);
         return this;
     }
 
@@ -395,37 +397,37 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      */
     public GuiElementBuilder setProfile(GameProfile profile) {
         if (!profile.properties().isEmpty()) {
-            return this.setProfile(ProfileComponent.ofStatic(profile));
+            return this.setProfile(ResolvableProfile.createResolved(profile));
         }
         if (profile.name().isEmpty()) {
-            return this.setProfile(ProfileComponent.ofDynamic(profile.id()));
+            return this.setProfile(ResolvableProfile.createUnresolved(profile.id()));
         }
         if (profile.id().equals(Util.NIL_UUID)) {
-            return this.setProfile(ProfileComponent.ofDynamic(profile.name()));
+            return this.setProfile(ResolvableProfile.createUnresolved(profile.name()));
         }
         return this;
     }
 
     public GuiElementBuilder setProfile(String name) {
-        return this.setProfile(ProfileComponent.ofDynamic(name));
+        return this.setProfile(ResolvableProfile.createUnresolved(name));
     }
 
     public GuiElementBuilder setProfile(UUID uuid) {
-        return this.setProfile(ProfileComponent.ofDynamic(uuid));
+        return this.setProfile(ResolvableProfile.createUnresolved(uuid));
     }
 
     public GuiElementBuilder setProfile(Identifier textureId) {
-        return this.setProfile(StaticAccessor.createStatic(Either.right(ProfileComponent.Data.EMPTY),
-                new SkinTextures.SkinOverride(Optional.of(new AssetInfo.TextureAssetInfo(textureId)), Optional.empty(),
+        return this.setProfile(StaticAccessor.createStatic(Either.right(ResolvableProfile.Partial.EMPTY),
+                new PlayerSkin.Patch(Optional.of(new ClientAsset.ResourceTexture(textureId)), Optional.empty(),
                         Optional.empty(), Optional.empty())));
     }
 
-    public GuiElementBuilder setProfile(SkinTextures.SkinOverride info) {
-        return this.setProfile(StaticAccessor.createStatic(Either.right(ProfileComponent.Data.EMPTY), info));
+    public GuiElementBuilder setProfile(PlayerSkin.Patch info) {
+        return this.setProfile(StaticAccessor.createStatic(Either.right(ResolvableProfile.Partial.EMPTY), info));
     }
 
-    public GuiElementBuilder setProfile(ProfileComponent component) {
-        this.itemStack.set(DataComponentTypes.PROFILE, component);
+    public GuiElementBuilder setProfile(ResolvableProfile component) {
+        this.itemStack.set(DataComponents.PROFILE, component);
         return this;
     }
 
@@ -506,15 +508,15 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
     public ItemStack asStack() {
         var copy = itemStack.copy();
         if (this.noTooltips) {
-            copy.set(DataComponentTypes.TOOLTIP_DISPLAY, new TooltipDisplayComponent(true, ReferenceSortedSets.emptySet()));
+            copy.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(true, ReferenceSortedSets.emptySet()));
         } else if (this.hideComponentTooltips) {
-            var comp = TooltipDisplayComponent.DEFAULT;
+            var comp = TooltipDisplay.DEFAULT;
             for (var entry : this.itemStack.getComponents()) {
-                if (entry.type() != DataComponentTypes.ITEM_NAME && entry.type() != DataComponentTypes.CUSTOM_NAME && entry.type() != DataComponentTypes.LORE) {
-                    comp = comp.with(entry.type(), true);
+                if (entry.type() != DataComponents.ITEM_NAME && entry.type() != DataComponents.CUSTOM_NAME && entry.type() != DataComponents.LORE) {
+                    comp = comp.withHidden(entry.type(), true);
                 }
             }
-            copy.set(DataComponentTypes.TOOLTIP_DISPLAY, comp);
+            copy.set(DataComponents.TOOLTIP_DISPLAY, comp);
         }
 
         return copy;

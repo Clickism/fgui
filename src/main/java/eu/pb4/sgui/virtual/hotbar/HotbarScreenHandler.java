@@ -5,20 +5,19 @@ import eu.pb4.sgui.api.gui.HotbarGui;
 import eu.pb4.sgui.api.gui.SlotGuiInterface;
 import eu.pb4.sgui.virtual.inventory.VirtualScreenHandler;
 import eu.pb4.sgui.virtual.inventory.VirtualSlot;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.SetPlayerInventoryS2CPacket;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public class HotbarScreenHandler extends VirtualScreenHandler {
     private final int x = 0;
-    public DefaultedList<ItemStack> slotsOld = null;
+    public NonNullList<ItemStack> slotsOld = null;
 
-    public HotbarScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, SlotGuiInterface gui, PlayerEntity player) {
+    public HotbarScreenHandler(@Nullable MenuType<?> type, int syncId, SlotGuiInterface gui, Player player) {
         super(type, syncId, gui, player);
     }
 
@@ -28,7 +27,7 @@ public class HotbarScreenHandler extends VirtualScreenHandler {
     }
 
     @Override
-    protected void setupSlots(PlayerEntity player) {
+    protected void setupSlots(Player player) {
         for (int n = 0; n < this.getGui().getSize(); n++) {
             int nR = HotbarGui.VANILLA_TO_GUI_IDS[n];
             Slot slot = this.getGui().getSlotRedirect(nR);
@@ -41,8 +40,8 @@ public class HotbarScreenHandler extends VirtualScreenHandler {
     }
 
     @Override
-    public void sendContentUpdates() {
-        super.sendContentUpdates();
+    public void broadcastChanges() {
+        super.broadcastChanges();
         /*try {
             this.getGui().onTick();
             if (this.getGui().isOpen()) {
@@ -86,7 +85,7 @@ public class HotbarScreenHandler extends VirtualScreenHandler {
         var gui = this.getGui();
         if (gui.isOpen()) {
             int index = gui.getHotbarSlotIndex(this.slots.size(), gui.getSelectedSlot());
-            GuiHelpers.sendSlotUpdate(gui.getPlayer(), this.syncId, index, this.getSlot(index).getStack(), this.nextRevision());
+            GuiHelpers.sendSlotUpdate(gui.getPlayer(), this.containerId, index, this.getSlot(index).getItem(), this.incrementStateId());
         }
     }
 
@@ -95,7 +94,7 @@ public class HotbarScreenHandler extends VirtualScreenHandler {
         var gui = this.getGui();
         if (gui.isOpen()) {
             int index = gui.getOffhandSlotIndex();
-            GuiHelpers.sendSlotUpdate(gui.getPlayer(), this.syncId, index, this.getSlot(index).getStack(), this.nextRevision());
+            GuiHelpers.sendSlotUpdate(gui.getPlayer(), this.containerId, index, this.getSlot(index).getItem(), this.incrementStateId());
         }
     }
 }

@@ -1,9 +1,8 @@
 package eu.pb4.sgui.api.elements;
 
 import eu.pb4.sgui.api.gui.GuiInterface;
-import net.minecraft.item.ItemStack;
-
 import java.util.WeakHashMap;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Animated Gui Element
@@ -80,9 +79,9 @@ public class AnimatedGuiElement implements GuiElementInterface {
     public ItemStack getItemStackForDisplay(GuiInterface gui) {
         int cFrame = this.frame;
 
-        if (gui.getPlayer().getEntityWorld().getServer() != null && this.lastTick != gui.getPlayer().getEntityWorld().getServer().getTicks()) {
+        if (gui.getPlayer().level().getServer() != null && this.lastTick != gui.getPlayer().level().getServer().getTickCount()) {
             this.tick += 1;
-            this.lastTick = gui.getPlayer().getEntityWorld().getServer().getTicks();
+            this.lastTick = gui.getPlayer().level().getServer().getTickCount();
         }
         if (this.tick >= this.changeEvery) {
             this.tick = 0;
