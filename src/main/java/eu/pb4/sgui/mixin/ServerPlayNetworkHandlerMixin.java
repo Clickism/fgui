@@ -370,8 +370,14 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketLi
         }
     }
 
+    //? if fabric {
     @Inject(method = "method_44900", at = @At("HEAD"), cancellable = true)
-    private void sgui$onMessage(ServerboundChatPacket packet, Optional<LastSeenMessages> optional, CallbackInfo ci) {
+     //?} else
+    //@Inject(method = "handleChat", at = @At("HEAD"), cancellable = true)
+    private void sgui$onMessage(ServerboundChatPacket packet,
+                                //? if fabric
+                                Optional<LastSeenMessages> optional,
+                                CallbackInfo ci) {
         if (this.player.containerMenu instanceof BookScreenHandler handler) {
             try {
                 if (handler.getGui().onCommand(packet.message())) {
@@ -383,7 +389,10 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketLi
         }
     }
 
+    //? if fabric {
     @Inject(method = "method_44356", at = @At("HEAD"), cancellable = true)
+    //?} else
+    //@Inject(method = "handleChatCommand", at = @At("HEAD"), cancellable = true)
     private void sgui$onCommand(ServerboundChatCommandPacket packet, CallbackInfo ci) {
         if (this.player.containerMenu instanceof BookScreenHandler handler) {
             try {
