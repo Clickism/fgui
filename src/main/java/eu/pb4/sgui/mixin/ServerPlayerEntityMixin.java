@@ -5,7 +5,6 @@ import eu.pb4.sgui.impl.PlayerExtensions;
 import eu.pb4.sgui.virtual.SguiScreenHandlerFactory;
 import eu.pb4.sgui.virtual.VirtualScreenHandlerInterface;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -48,7 +47,7 @@ public abstract class ServerPlayerEntityMixin extends Player implements PlayerEx
     )
     private void sgui$dontForceCloseFor(MenuProvider factory,
                                         //? if neoforge
-                                        //@Nullable Consumer<RegistryFriendlyByteBuf> extraDataWriter,
+                                        //Consumer<RegistryFriendlyByteBuf> extraDataWriter,
                                         CallbackInfoReturnable<OptionalInt> cir) {
         if (factory instanceof SguiScreenHandlerFactory<?> sguiScreenHandlerFactory && !sguiScreenHandlerFactory.gui().resetMousePosition()) {
             this.sgui$ignoreNext = true;
