@@ -1,0 +1,32 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license="GPL-3.0"
+showAsResourcePack=false
+
+[[mixins]]
+config="sgui.mixins.json"
+
+[[mods]]
+modId="sgui"
+version="${mod_version}"
+displayName="sgui"
+logoFile="assets/icon.png"
+authors="Patbox"
+description='''
+Library for creating server side guis!
+'''
+
+[[dependencies.sgui]]
+modId="neoforge"
+type="required"
+versionRange="*"
+side="BOTH"
+
+[[dependencies.sgui]]
+modId = "minecraft"
+type = "required"
+versionRange = "*"
+side = "BOTH"
+
+[[accessTransformers]]
+file="META-INF/neoforge.accesstransformer.cfg"

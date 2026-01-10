@@ -1,0 +1,25 @@
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        maven("https://maven.fabricmc.net/")
+    }
+}
+
+plugins {
+    id("dev.kikugie.stonecutter") version "0.8.2"
+}
+
+stonecutter {
+    kotlinController = true
+    create(rootProject) {
+        fun version(version: String, vararg loaders: String) {
+            loaders.forEach {
+                this.version("$version-$it", version)
+                    .buildscript = "build.$it.gradle.kts"
+            }
+        }
+        version("1.21.11", "fabric", "neoforge")
+        vcsVersion = "1.21.11-fabric"
+    }
+}

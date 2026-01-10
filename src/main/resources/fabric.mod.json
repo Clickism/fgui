@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "sgui",
-  "version": "${version}",
+  "version": "${mod_version}",
 
   "name": "sgui",
   "description": "Library for creating server side guis!",
@@ -13,7 +13,7 @@
   ],
   "contact": {
     "homepage": "https://pb4.eu",
-    "sources": "https://github.com/Patbox/sgui"
+    "sources": "https://github.com/Clickism/sgui"
   },
   "license": "LGPLv3",
   "icon": "assets/icon.png",
@@ -26,7 +26,7 @@
     "sgui.mixins.json"
   ],
   "depends": {
-    "minecraft": ">=1.21.11-"
+    "minecraft": "${minecraft_version}"
   },
   "custom": {
     "modmenu": {
