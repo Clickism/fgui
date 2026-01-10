@@ -1,7 +1,6 @@
-import org.gradle.api.internal.artifacts.dependencies.DefaultImmutableVersionConstraint.strictly
-
 plugins {
     id("net.neoforged.moddev") version "2.0.137"
+    id("maven-publish")
 }
 
 val archivesBaseName = project.property("archives_base_name").toString()
@@ -69,4 +68,30 @@ tasks.processResources {
         expand(properties)
     }
     inputs.properties(properties)
+}
+
+val env = System.getenv()
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            groupId = group.toString()
+            artifactId = "sgui"
+            version = version.toString()
+        }
+    }
+    repositories {
+        if (env["MAVEN_URL"] != null) {
+            maven {
+                url = uri(env["MAVEN_URL"]!!)
+                credentials {
+                    username = env["MAVEN_USERNAME"]
+                    password = env["MAVEN_PASSWORD"]
+                }
+            }
+        } else {
+            mavenLocal()
+        }
+    }
 }
