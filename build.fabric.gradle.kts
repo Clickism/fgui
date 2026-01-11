@@ -30,7 +30,7 @@ base {
 
 loom {
 	if (stonecutter.eval(stonecutter.current.version, ">=1.21.10")) {
-		accessWidenerPath.set(rootProject.file("src/main/resources/sgui.accesswidener"))
+		accessWidenerPath.set(rootProject.file("src/main/resources/fgui.accesswidener"))
 	}
 }
 

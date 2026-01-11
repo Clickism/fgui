@@ -1,19 +1,20 @@
 {
   "schemaVersion": 1,
-  "id": "sgui",
+  "id": "fgui",
   "version": "${mod_version}",
 
-  "name": "sgui",
+  "name": "fgui",
   "description": "Library for creating server side guis!",
   "authors": [
-    "Patbox"
+    "Patbox",
+    "Clickism"
   ],
   "contributors": [
     "aws404"
   ],
   "contact": {
-    "homepage": "https://pb4.eu",
-    "sources": "https://github.com/Clickism/sgui"
+    "homepage": "https://clickism.de",
+    "sources": "https://github.com/Clickism/fgui"
   },
   "license": "LGPLv3",
   "icon": "assets/icon.png",
@@ -21,9 +22,9 @@
   "entrypoints": {
 
   },
-  "accessWidener": "sgui.accesswidener",
+  "accessWidener": "fgui.accesswidener",
   "mixins": [
-    "sgui.mixins.json"
+    "fgui.mixins.json"
   ],
   "depends": {
     "minecraft": "${minecraft_version_range}"

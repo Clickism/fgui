@@ -7,22 +7,22 @@ showAsResourcePack=false
 config="sgui.mixins.json"
 
 [[mods]]
-modId="sgui"
+modId="fgui"
 version="${mod_version}"
-displayName="sgui"
+displayName="fgui"
 logoFile="assets/icon.png"
-authors="Patbox"
+authors="Clickism"
 description='''
 Library for creating server side guis!
 '''
 
-[[dependencies.sgui]]
+[[dependencies.fgui]]
 modId="neoforge"
 type="required"
 versionRange="*"
 side="BOTH"
 
-[[dependencies.sgui]]
+[[dependencies.fgui]]
 modId = "minecraft"
 type = "required"
 versionRange = "*"
