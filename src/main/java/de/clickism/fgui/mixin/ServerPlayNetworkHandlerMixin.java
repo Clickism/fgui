@@ -22,14 +22,11 @@ import net.minecraft.network.chat.LastSeenMessages;
 import net.minecraft.network.protocol.game.ClientboundBlockChangedAckPacket;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
-import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
 import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
 import net.minecraft.network.protocol.game.ServerboundChatPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
-import net.minecraft.network.protocol.game.ServerboundPickItemFromBlockPacket;
-import net.minecraft.network.protocol.game.ServerboundPickItemFromEntityPacket;
 import net.minecraft.network.protocol.game.ServerboundPlaceRecipePacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.protocol.game.ServerboundRenameItemPacket;
@@ -57,6 +54,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 import java.util.Optional;
+
+//? if >=1.21.4 {
+import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
+import net.minecraft.network.protocol.game.ServerboundPickItemFromBlockPacket;
+import net.minecraft.network.protocol.game.ServerboundPickItemFromEntityPacket;
+//?}
 
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketListenerImpl {
@@ -230,7 +233,14 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketLi
     private void sgui$catchRecipeRequests(ServerboundPlaceRecipePacket packet, CallbackInfo ci) {
         if (this.player.containerMenu instanceof VirtualScreenHandler handler && handler.getGui() instanceof SimpleGui gui) {
             try {
-                gui.onCraftRequest(packet.recipe(), packet.useMaxItems());
+                //? if >=1.21.4 {
+                var recipe = packet.recipe();
+                var useMaxItems = packet.useMaxItems();
+                //?} else {
+                /*var recipe = packet.getRecipe();
+                var useMaxItems = packet.isShiftDown();
+                *///?}
+                gui.onCraftRequest(recipe, useMaxItems);
             } catch (Throwable e) {
                 handler.getGui().handleException(e);
             }
@@ -269,7 +279,10 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketLi
     private void sgui$catchUpdateSelectedSlot(ServerboundSetCarriedItemPacket packet, CallbackInfo ci) {
         if (this.player.containerMenu instanceof HotbarScreenHandler handler) {
             if (!handler.getGui().onSelectedSlotChange(packet.getSlot())) {
+                //? if >=1.21.4 {
                 this.send(new ClientboundSetHeldSlotPacket(handler.getGui().getSelectedSlot()));
+                //?} else
+                //this.send(new ServerboundSetCarriedItemPacket(handler.getGui().getSelectedSlot()));
             }
             ci.cancel();
         }
@@ -282,6 +295,7 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketLi
         }
     }
 
+    //? if >=1.21.4 {
     @Inject(method = "handlePickItemFromBlock", at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/server/level/ServerLevel;)V"), cancellable = true)
     private void sgui$pickBlockHandler(ServerboundPickItemFromBlockPacket packet, CallbackInfo ci) {
         if (this.player.containerMenu instanceof HotbarScreenHandler screenHandler) {
@@ -301,6 +315,7 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketLi
             }
         }
     }
+    //?}
 
     @Inject(method = "handleAnimate", at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/server/level/ServerLevel;)V"), cancellable = true)
     private void sgui$clickHandSwing(ServerboundSwingPacket packet, CallbackInfo ci) {

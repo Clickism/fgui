@@ -22,10 +22,14 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.display.RecipeDisplayId;
 
 //? if >=1.21.5
 import de.clickism.fgui.mixin.ScreenHandlerAccessor;
+
+//? if >=1.21.4 {
+import net.minecraft.world.item.crafting.display.RecipeDisplayId;
+//?} else
+//import net.minecraft.resources.Identifier;
 
 /**
  * Simple Gui Implementation
@@ -206,7 +210,13 @@ public class SimpleGui extends BaseSlotGui {
      * @param recipe the selected recipe identifier
      * @param shift  is shift was held
      */
-    public void onCraftRequest(RecipeDisplayId recipe, boolean shift) {
+    public void onCraftRequest(
+            //? if >=1.21.4 {
+            RecipeDisplayId recipe,
+            //?} else
+            //Identifier recipe,
+            boolean shift
+    ) {
     }
 
     @Override
