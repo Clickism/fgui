@@ -23,18 +23,21 @@ base {
 
 neoForge {
     version = property("deps.neoforge").toString()
-    accessTransformers.from(rootProject.file("src/main/resources/META-INF/accesstransformer.cfg"))
+    if (stonecutter.eval(stonecutter.current.version, ">=1.21.10")) {
+        accessTransformers.from(rootProject.file("src/main/resources/META-INF/accesstransformer.cfg"))
+    }
 
+    val runDir = "../../run"
     runs {
         register("client") {
             client()
-            gameDirectory = file("run/")
+            gameDirectory = file(runDir)
             ideName = "NeoForge Client (${stonecutter.active?.version})"
             programArgument("--username=ClickToPlay")
         }
         register("server") {
             server()
-            gameDirectory = file("run/")
+            gameDirectory = file(runDir)
             ideName = "NeoForge Server (${stonecutter.active?.version})"
         }
     }

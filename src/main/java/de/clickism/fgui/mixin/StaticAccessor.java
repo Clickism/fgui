@@ -1,5 +1,5 @@
 package de.clickism.fgui.mixin;
-
+//? if >=1.21.10 {
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.world.entity.player.PlayerSkin;
@@ -14,3 +14,4 @@ public interface StaticAccessor {
         throw new UnsupportedOperationException();
     }
 }
+//?}

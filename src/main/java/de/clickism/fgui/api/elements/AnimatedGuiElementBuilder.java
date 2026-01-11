@@ -1,14 +1,9 @@
 package de.clickism.fgui.api.elements;
 
-import com.google.common.collect.ImmutableMultimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
-import com.mojang.datafixers.util.Either;
 import de.clickism.fgui.api.GuiHelpers;
-import de.clickism.fgui.mixin.StaticAccessor;
 import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
-import net.minecraft.core.ClientAsset;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
@@ -19,7 +14,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.*;
-import net.minecraft.world.entity.player.PlayerSkin;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -33,8 +27,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+//? if >=1.21.10 {
+import com.google.common.collect.ImmutableMultimap;
+import com.mojang.authlib.properties.PropertyMap;
+//?}
+
 //? if <=1.21.10
 //import net.minecraft.Util;
+
+//? if <=1.21.8 {
+/*import com.mojang.authlib.minecraft.MinecraftProfileTextures;
+*///?}
 
 /**
  * Animated Gui Element Builder
@@ -365,7 +368,12 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
      * @param profile the {@link GameProfile} of the owner
      * @return this element builder
      */
-    public AnimatedGuiElementBuilder setProfile(GameProfile profile) {
+    public AnimatedGuiElementBuilder setProfile(
+            GameProfile profile
+            //? if <=1.21.8
+            //, @Nullable MinecraftServer server
+    ) {
+        //? if >=1.21.10 {
         if (!profile.properties().isEmpty()) {
             return this.setProfile(ResolvableProfile.createResolved(profile));
         }
@@ -375,40 +383,41 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
         if (profile.id().equals(Util.NIL_UUID)) {
             return this.setProfile(ResolvableProfile.createUnresolved(profile.name()));
         }
+        //?} else {
+        /*if (profile.getId() != null && server != null) {
+            if (server.getSessionService().getTextures(profile) == MinecraftProfileTextures.EMPTY) {
+                var tmp = server.getSessionService().fetchProfile(profile.getId(), false);
+                if (tmp != null) {
+                    profile = tmp.profile();
+                }
+            }
+
+        }
+        this.itemStack.set(DataComponents.PROFILE, new ResolvableProfile(profile));
+        *///?}
         return this;
     }
 
-    public AnimatedGuiElementBuilder setProfile(String name) {
-        return this.setProfile(ResolvableProfile.createUnresolved(name));
-    }
-
-    public AnimatedGuiElementBuilder setProfile(UUID uuid) {
-        return this.setProfile(ResolvableProfile.createUnresolved(uuid));
-    }
-
-    public AnimatedGuiElementBuilder setProfile(Identifier textureId) {
-        return this.setProfile(StaticAccessor.createStatic(Either.right(ResolvableProfile.Partial.EMPTY),
-                new PlayerSkin.Patch(Optional.of(new ClientAsset.ResourceTexture(textureId)), Optional.empty(),
-                        Optional.empty(), Optional.empty())));
-    }
-
-    public AnimatedGuiElementBuilder setProfile(PlayerSkin.Patch info) {
-        return this.setProfile(StaticAccessor.createStatic(Either.right(ResolvableProfile.Partial.EMPTY), info));
-    }
-
+    //? if >=1.21.10 {
     public AnimatedGuiElementBuilder setProfile(ResolvableProfile component) {
         this.itemStack.set(DataComponents.PROFILE, component);
         return this;
     }
-
+    //?}
 
     public AnimatedGuiElementBuilder setProfileSkinTexture(String value) {
         return this.setProfileSkinTexture(value, null, null);
     }
 
     public AnimatedGuiElementBuilder setProfileSkinTexture(String value, @Nullable String signature, @Nullable UUID uuid) {
+        //? if >=1.21.10 {
         PropertyMap map = new PropertyMap(ImmutableMultimap.of("textures", new Property("textures", value, signature)));
-        return this.setProfile(new GameProfile( uuid != null ? uuid : Util.NIL_UUID, "", map));
+        return this.setProfile(new GameProfile(uuid != null ? uuid : Util.NIL_UUID, "", map));
+        //?} else {
+        /*var profile = new GameProfile(uuid != null ? uuid : Util.NIL_UUID, "");
+        profile.getProperties().put("textures", new Property("textures", value, signature));
+        return this.setProfile(profile, null);
+        *///?}
     }
 
     /**
@@ -424,7 +433,11 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
      */
     @Deprecated
     public AnimatedGuiElementBuilder setSkullOwner(GameProfile profile, @Nullable MinecraftServer server) {
-        return this.setProfile(profile);
+        return this.setProfile(
+                profile
+                //? if <=1.21.8
+                //, server
+        );
     }
 
     /**
