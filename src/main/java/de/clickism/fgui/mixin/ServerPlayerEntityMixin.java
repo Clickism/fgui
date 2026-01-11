@@ -20,18 +20,30 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-import java.util.function.Consumer;
-
+//? if neoforge {
+/*import java.util.function.Consumer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+*///?}
+
+//? if <=1.21.5 {
+/*import net.minecraft.world.level.Level;
+import net.minecraft.core.BlockPos;
+*///?}
 
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerEntityMixin extends Player implements PlayerExtensions {
     @Unique
     private boolean sgui$ignoreNext = false;
 
+    //? if >=1.21.8 {
     public ServerPlayerEntityMixin(Level world, GameProfile gameProfile) {
         super(world, gameProfile);
     }
+    //?} else {
+    /*public ServerPlayerEntityMixin(Level world, BlockPos pos, float yaw, GameProfile gameProfile) {
+        super(world, pos, yaw, gameProfile);
+    }
+    *///?}
 
     @Shadow
     public abstract void doCloseContainer();
