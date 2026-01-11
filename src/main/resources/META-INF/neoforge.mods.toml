@@ -29,4 +29,4 @@ versionRange = "*"
 side = "BOTH"
 
 [[accessTransformers]]
-file="META-INF/neoforge.accesstransformer.cfg"
+file="META-INF/accesstransformer.cfg"
