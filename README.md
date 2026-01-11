@@ -16,7 +16,7 @@ Add it to your dependencies like this:
 
 ```kotlin
 dependencies {
-    modImplementation(include("de.clickism:fgui-fabric:"))
+    modImplementation(include("de.clickism:fgui-fabric:1.0+1.21.11"))
 }
 ```
 
@@ -24,7 +24,7 @@ dependencies {
 
 ```kotlin
 dependencies {
-    jarJar(implementation("de.clickism:fgui-neoforge:"))
+    jarJar(implementation("de.clickism:fgui-neoforge:1.0+1.21.11"))
 }
 ```
 
