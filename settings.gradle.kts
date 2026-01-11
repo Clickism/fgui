@@ -24,3 +24,5 @@ stonecutter {
         vcsVersion = "1.21.11-fabric"
     }
 }
+
+rootProject.name = "fgui"

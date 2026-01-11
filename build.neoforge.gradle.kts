@@ -3,26 +3,22 @@ plugins {
     id("maven-publish")
 }
 
-val archivesBaseName = project.property("archives_base_name").toString()
-
 val modVersion = project.property("mod.version").toString()
 val minecraftVersion = stonecutter.current.project.substringBeforeLast('-')
 val loader = stonecutter.current.project.substringAfterLast('-')
 
+val archivesBaseName = "${project.property("archives_base_name")}-$loader"
+val fullVersion = "$modVersion+$minecraftVersion"
 
-version = "$modVersion+$minecraftVersion-$loader"
+version = fullVersion
 group = project.property("maven_group").toString()
 
 repositories {
-    maven("https://jitpack.io")
+    mavenCentral()
 }
 
 base {
     archivesName.set(archivesBaseName)
-}
-
-dependencies {
-
 }
 
 neoForge {
@@ -49,13 +45,13 @@ neoForge {
     }
 }
 
-base {
-    archivesName.set(property("archives_base_name").toString())
-}
-
 tasks.named("createMinecraftArtifacts") {
     // This tells NeoForge to wait until Stonecutter has generated the files
     mustRunAfter(tasks.named("stonecutterGenerate"))
+}
+
+java {
+    withSourcesJar()
 }
 
 tasks.processResources {
@@ -85,8 +81,8 @@ publishing {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
             groupId = group.toString()
-            artifactId = "sgui"
-            version = version.toString()
+            artifactId = archivesBaseName
+            version = fullVersion
         }
     }
     repositories {

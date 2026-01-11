@@ -10,17 +10,18 @@ java {
 	withSourcesJar()
 }
 
-val archivesBaseName = project.property("archives_base_name").toString()
-
 val modVersion = project.property("mod.version").toString()
 val minecraftVersion = stonecutter.current.project.substringBeforeLast('-')
 val loader = stonecutter.current.project.substringAfterLast('-')
 
-version = "$modVersion+$minecraftVersion-$loader"
+val archivesBaseName = "${project.property("archives_base_name")}-$loader"
+val fullVersion = "$modVersion+$minecraftVersion"
+
+version = fullVersion
 group = project.property("maven_group").toString()
 
 repositories {
-	maven("https://jitpack.io")
+	mavenCentral()
 }
 
 base {
@@ -75,12 +76,10 @@ val env = System.getenv()
 publishing {
 	publications {
 		create<MavenPublication>("mavenJava") {
-			artifact(tasks.remapJar) {
-				builtBy(tasks.remapJar)
-			}
-			artifact(tasks.remapSourcesJar) {
-				builtBy(tasks.remapSourcesJar)
-			}
+			from(components["java"])
+			groupId = group.toString()
+			artifactId = archivesBaseName
+			version = fullVersion
 		}
 	}
 
