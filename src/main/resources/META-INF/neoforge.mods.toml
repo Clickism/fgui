@@ -4,7 +4,7 @@ license="GPL-3.0"
 showAsResourcePack=false
 
 [[mixins]]
-config="sgui.mixins.json"
+config="fgui.mixins.json"
 
 [[mods]]
 modId="fgui"
