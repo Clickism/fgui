@@ -81,25 +81,41 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketLi
                     return;
                 }
 
-                int slot = packet.slotNum();
-                int button = packet.buttonNum();
+                //? if >=1.21.5 {
+                var slot = packet.slotNum();
+                var button = packet.buttonNum();
+                var stateId = packet.stateId();
+                var changedSlots = packet.changedSlots();
+                var clickType = packet.clickType();
+                var carriedItem = packet.carriedItem();
+                //?} else {
+                /*var slot = packet.getSlotNum();
+                var button = packet.getButtonNum();
+                var stateId = packet.getStateId();
+                var changedSlots = packet.getChangedSlots();
+                var clickType = packet.getClickType();
+                var carriedItem = packet.getCarriedItem();
+                *///?}
 
-                ClickType type = ClickType.toClickType(packet.clickType(), button, slot);
-                boolean ignore = gui.onAnyClick(slot, type, packet.clickType());
+                ClickType type = ClickType.toClickType(clickType, button, slot);
+                boolean ignore = gui.onAnyClick(slot, type, clickType);
                 if (ignore && !handler.getGui().getLockPlayerInventory() && (slot >= handler.getGui().getSize() || slot < 0 || handler.getGui().getSlotRedirect(slot) != null)) {
                     return;
                 }
 
                 this.player.containerMenu.suppressRemoteUpdates();
-                boolean bl = packet.stateId() != this.player.containerMenu.getStateId();
+                boolean bl = stateId != this.player.containerMenu.getStateId();
 
-                for (var entry : Int2ObjectMaps.fastIterable(packet.changedSlots())) {
+                for (var entry : Int2ObjectMaps.fastIterable(changedSlots)) {
+                    //? if >=1.21.5 {
                     this.player.containerMenu.setRemoteSlotUnsafe(entry.getIntKey(), entry.getValue());
+                    //?} else
+                    //this.player.containerMenu.setRemoteSlotNoCopy(entry.getIntKey(), entry.getValue());
                 }
 
-                this.player.containerMenu.setRemoteCarried(packet.carriedItem());
+                this.player.containerMenu.setRemoteCarried(carriedItem);
 
-                boolean allow = gui.click(slot, type, packet.clickType());
+                boolean allow = gui.click(slot, type, clickType);
 
                 this.player.containerMenu.resumeRemoteUpdates();
                 if (allow) {
@@ -128,9 +144,16 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketLi
     private void sgui$resyncGui(ServerboundContainerClickPacket packet, CallbackInfo ci) {
         if (this.player.containerMenu instanceof VirtualScreenHandler handler) {
             try {
-                int slot = packet.slotNum();
-                int button = packet.buttonNum();
-                ClickType type = ClickType.toClickType(packet.clickType(), button, slot);
+                //? if >=1.21.5 {
+                var slot = packet.slotNum();
+                var button = packet.buttonNum();
+                var clickType = packet.clickType();
+                //?} else {
+                /*var slot = packet.getSlotNum();
+                var button = packet.getButtonNum();
+                var clickType = packet.getClickType();
+                *///?}
+                ClickType type = ClickType.toClickType(clickType, button, slot);
 
                 if (type == ClickType.MOUSE_DOUBLE_CLICK || (type.isDragging && type.value == 2) || type.shift) {
                     GuiHelpers.sendPlayerScreenHandler(this.player);

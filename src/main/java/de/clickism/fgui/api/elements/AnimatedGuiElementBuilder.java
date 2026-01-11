@@ -3,7 +3,6 @@ package de.clickism.fgui.api.elements;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import de.clickism.fgui.api.GuiHelpers;
-import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
@@ -21,7 +20,6 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.component.ResolvableProfile;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,9 +33,16 @@ import com.mojang.authlib.properties.PropertyMap;
 //? if <=1.21.10
 //import net.minecraft.Util;
 
-//? if <=1.21.8 {
-/*import com.mojang.authlib.minecraft.MinecraftProfileTextures;
-*///?}
+//? if <=1.21.8
+//import com.mojang.authlib.minecraft.MinecraftProfileTextures;
+
+//? if >=1.21.5 {
+import net.minecraft.world.item.component.TooltipDisplay;
+import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
+//?}
+
+//? if <=1.21.4
+//import net.minecraft.world.item.component.Unbreakable;
 
 /**
  * Animated Gui Element Builder
@@ -353,7 +358,12 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
      * @return this element builder
      */
     public AnimatedGuiElementBuilder unbreakable() {
-        this.itemStack.set(DataComponents.UNBREAKABLE, Unit.INSTANCE);
+        this.itemStack.set(DataComponents.UNBREAKABLE,
+                //? if >=1.21.5 {
+                Unit.INSTANCE
+                 //?} else
+                //new Unbreakable(false)
+        );
         return this;
     }
 
@@ -506,6 +516,7 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
      * @see AnimatedGuiElementBuilder#build()
      */
     public ItemStack asStack() {
+        //? if >=1.21.5 {
         var copy = itemStack.copy();
         if (this.noTooltips) {
             copy.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(true, ReferenceSortedSets.emptySet()));
@@ -518,7 +529,9 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
             }
             copy.set(DataComponents.TOOLTIP_DISPLAY, comp);
         }
-
+        //?} else {
+        /*var copy = itemStack.copy();
+        *///?}
         return copy;
     }
 

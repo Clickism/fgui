@@ -288,7 +288,11 @@ public class HotbarGui extends BaseSlotGui {
         if ((this.isOpen() || screenHandlerIsClosed) && !this.reOpen) {
             if (!screenHandlerIsClosed && this.player.containerMenu == this.screenHandler) {
                 this.player.closeContainer();
-                this.player.connection.send(new ClientboundSetHeldSlotPacket(this.player.getInventory().getSelectedSlot()));
+                //? if >=1.21.5 {
+                var slot = this.player.getInventory().getSelectedSlot();
+                //?} else
+                //var slot = this.player.getInventory().selected;
+                this.player.connection.send(new ClientboundSetHeldSlotPacket(slot));
             }
 
             this.player.containerMenu.sendAllDataToRemote();

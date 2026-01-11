@@ -3,7 +3,6 @@ package de.clickism.fgui.api.gui;
 import de.clickism.fgui.api.GuiHelpers;
 import de.clickism.fgui.api.elements.GuiElement;
 import de.clickism.fgui.api.elements.GuiElementInterface;
-import de.clickism.fgui.mixin.ScreenHandlerAccessor;
 import de.clickism.fgui.virtual.inventory.VirtualScreenHandler;
 import de.clickism.fgui.virtual.SguiScreenHandlerFactory;
 import de.clickism.fgui.virtual.inventory.VirtualSlot;
@@ -24,6 +23,9 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.display.RecipeDisplayId;
+
+//? if >=1.21.5
+import de.clickism.fgui.mixin.ScreenHandlerAccessor;
 
 /**
  * Simple Gui Implementation
@@ -132,6 +134,7 @@ public class SimpleGui extends BaseSlotGui {
             for (var i = 0; i < this.screenHandler.slots.size(); i++) {
                 this.screenHandler.setRemoteSlot(i, this.screenHandler.slots.get(i).getItem().copy());
             }
+            //? if >=1.21.5
             ((ScreenHandlerAccessor) this.screenHandler).getRemoteCarried().force(this.screenHandler.getCarried());
         }
     }
