@@ -1,17 +1,15 @@
 package de.clickism.fgui.api.gui;
 
 import de.clickism.fgui.api.ClickType;
-import de.clickism.fgui.api.GuiHelpers;
 import de.clickism.fgui.api.elements.GuiElementInterface;
 import de.clickism.fgui.mixin.ServerPlayerEntityAccessor;
 import de.clickism.fgui.virtual.hotbar.HotbarScreenHandler;
 import de.clickism.fgui.virtual.inventory.VirtualSlot;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
+
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -21,6 +19,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+
+//? if >=1.21.4 {
+import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
+//?} else
+//import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 
 /**
  * It's a gui implementation for hotbar/player inventory usage
@@ -144,8 +147,14 @@ public class HotbarGui extends BaseSlotGui {
 
         this.player.containerMenu = this.screenHandler;
         ((ServerPlayerEntityAccessor) this.player).callInitMenu(this.screenHandler);
+        sendSetHeldSlotPacket(this.selectedSlot);
+    }
 
-        this.player.connection.send(new ClientboundSetHeldSlotPacket(this.selectedSlot));
+    private void sendSetHeldSlotPacket(int slot) {
+        //? if >=1.21.4 {
+        this.player.connection.send(new ClientboundSetHeldSlotPacket(slot));
+         //?} else
+        //this.player.connection.send(new ClientboundSetCarriedItemPacket(slot));
     }
 
     /**
@@ -181,16 +190,6 @@ public class HotbarGui extends BaseSlotGui {
         } else {
             this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_LEFT, net.minecraft.world.inventory.ClickType.PICKUP);
         }
-        return false;
-    }
-
-    public boolean onPickItemFromBlock(BlockPos pos, boolean includeData) {
-        this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_MIDDLE, net.minecraft.world.inventory.ClickType.CLONE);
-        return false;
-    }
-
-    public boolean onPickItemFromEntity(int entityId, boolean includeData) {
-        this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_MIDDLE, net.minecraft.world.inventory.ClickType.CLONE);
         return false;
     }
 
@@ -265,7 +264,7 @@ public class HotbarGui extends BaseSlotGui {
     public void setSelectedSlot(int value) {
         this.selectedSlot = Mth.clamp(value, 0, 8);
         if (this.isOpen()) {
-            this.player.connection.send(new ClientboundSetHeldSlotPacket(this.selectedSlot));
+            sendSetHeldSlotPacket(this.selectedSlot);
         }
     }
 
@@ -292,7 +291,7 @@ public class HotbarGui extends BaseSlotGui {
                 var slot = this.player.getInventory().getSelectedSlot();
                 //?} else
                 //var slot = this.player.getInventory().selected;
-                this.player.connection.send(new ClientboundSetHeldSlotPacket(slot));
+                sendSetHeldSlotPacket(slot);
             }
 
             this.player.containerMenu.sendAllDataToRemote();

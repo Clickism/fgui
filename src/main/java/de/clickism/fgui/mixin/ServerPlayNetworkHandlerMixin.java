@@ -295,28 +295,6 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketLi
         }
     }
 
-    //? if >=1.21.4 {
-    @Inject(method = "handlePickItemFromBlock", at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/server/level/ServerLevel;)V"), cancellable = true)
-    private void sgui$pickBlockHandler(ServerboundPickItemFromBlockPacket packet, CallbackInfo ci) {
-        if (this.player.containerMenu instanceof HotbarScreenHandler screenHandler) {
-            var gui = screenHandler.getGui();
-            if (!gui.onPickItemFromBlock(packet.pos(), packet.includeData())) {
-                ci.cancel();
-            }
-        }
-    }
-
-    @Inject(method = "handlePickItemFromEntity", at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/server/level/ServerLevel;)V"), cancellable = true)
-    private void sgui$pickEntityHandler(ServerboundPickItemFromEntityPacket packet, CallbackInfo ci) {
-        if (this.player.containerMenu instanceof HotbarScreenHandler screenHandler) {
-            var gui = screenHandler.getGui();
-            if (!gui.onPickItemFromEntity(packet.id(), packet.includeData())) {
-                ci.cancel();
-            }
-        }
-    }
-    //?}
-
     @Inject(method = "handleAnimate", at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/server/level/ServerLevel;)V"), cancellable = true)
     private void sgui$clickHandSwing(ServerboundSwingPacket packet, CallbackInfo ci) {
         if (this.player.containerMenu instanceof HotbarScreenHandler screenHandler) {

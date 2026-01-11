@@ -122,6 +122,10 @@ loom {
 			name("Fabric Test Mod Server")
 			source(sourceSets.getByName("fabricTestMod"))
 		}
+		configureEach {
+			runDir = "../../run"
+			ideConfigGenerated(true)
+		}
 	}
 }
 

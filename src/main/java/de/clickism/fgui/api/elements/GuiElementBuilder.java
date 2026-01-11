@@ -73,6 +73,7 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
         this.itemStack = new ItemStack(item);
     }
 
+    //? if >=1.21.4 {
     /**
      * Constructs a GuiElementBuilder with the specified item model.
      *
@@ -81,6 +82,7 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
     public GuiElementBuilder(Identifier model) {
         this.model(model);
     }
+    //?}
 
     /**
      * Constructs a GuiElementBuilder with the specified Item
@@ -262,9 +264,11 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      */
     public GuiElementBuilder noDefaults() {
         for (var x : this.itemStack.getItem().components()) {
+            //? if >=1.21.4 {
             if (x.type() == DataComponents.ITEM_MODEL) {
                 continue;
             }
+            //?}
             if (this.itemStack.get(x.type()) == x.value()) {
                 this.itemStack.set(x.type(), null);
             }
@@ -362,11 +366,19 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
      *
      * @return this element builder
      */
+    //? if >=1.21.4 {
     public GuiElementBuilder setCustomModelData(List<Float> floats, List<Boolean> flags, List<String> strings, List<Integer> colors) {
         this.itemStack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(floats, flags, strings, colors));
         return this;
     }
+    //? } else {
+    /*public GuiElementBuilder setCustomModelData(int data) {
+        this.itemStack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(data));
+        return this;
+    }
+    *///?}
 
+    //? if >=1.21.4 {
     /**
      * Sets the model of the element.
      *
@@ -382,6 +394,7 @@ public class GuiElementBuilder implements GuiElementBuilderInterface<GuiElementB
         this.itemStack.set(DataComponents.ITEM_MODEL, model.components().get(DataComponents.ITEM_MODEL));
         return this;
     }
+    //?}
 
     /**
      * Sets the element to be unbreakable, also hides the durability bar.

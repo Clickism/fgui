@@ -2,6 +2,7 @@ package de.clickism.fgui.api.gui;
 
 import de.clickism.fgui.virtual.FakeScreenHandler;
 import de.clickism.fgui.virtual.sign.VirtualSignBlockEntity;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
@@ -56,7 +57,21 @@ public class SignGui implements GuiInterface {
      */
     public SignGui(ServerPlayer player)  {
         this.player = player;
-        this.signEntity = new VirtualSignBlockEntity(player.level(), new BlockPos(player.blockPosition().getX(), Math.min(player.level().getMaxY(), player.blockPosition().getY() + 5), player.blockPosition().getZ()), Blocks.OAK_SIGN.defaultBlockState());
+        Level level = player.level();
+        //? if >=1.21.4 {
+        int maxY = level.getMaxY();
+        //?} else
+        //int maxY = level.getMaxBuildHeight();
+        BlockPos blockPos = player.blockPosition();
+        this.signEntity = new VirtualSignBlockEntity(
+                level,
+                new BlockPos(
+                        blockPos.getX(),
+                        Math.min(maxY, blockPos.getY() + 5),
+                        blockPos.getZ()
+                ),
+                Blocks.OAK_SIGN.defaultBlockState()
+        );
     }
 
     /**

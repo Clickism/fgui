@@ -347,10 +347,17 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
      *
      * @return this element builder
      */
+    //? if >=1.21.4 {
     public AnimatedGuiElementBuilder setCustomModelData(List<Float> floats, List<Boolean> flags, List<String> strings, List<Integer> colors) {
         this.itemStack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(floats, flags, strings, colors));
         return this;
     }
+    //? } else {
+    /*public AnimatedGuiElementBuilder setCustomModelData(int data) {
+        this.itemStack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(data));
+        return this;
+    }
+    *///?}
 
     /**
      * Sets the element to be unbreakable, also hides the durability bar.
@@ -478,6 +485,7 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
         return this.setProfileSkinTexture(value, signature, uuid);
     }
 
+    //? if >=1.21.4 {
     /**
      * Sets the model of the element.
      *
@@ -493,6 +501,7 @@ public class AnimatedGuiElementBuilder implements GuiElementBuilderInterface<Ani
         this.itemStack.set(DataComponents.ITEM_MODEL, model.components().get(DataComponents.ITEM_MODEL));
         return this;
     }
+    //?}
 
 
     @Override
