@@ -1,9 +1,9 @@
 package de.clickism.fgui.testmod;
 
-import eu.pb4.sgui.api.elements.GuiElement;
-import eu.pb4.sgui.api.elements.GuiElementBuilder;
-import eu.pb4.sgui.api.gui.layered.Layer;
-import eu.pb4.sgui.api.gui.layered.LayeredGui;
+import de.clickism.fgui.api.elements.GuiElement;
+import de.clickism.fgui.api.elements.GuiElementBuilder;
+import de.clickism.fgui.api.gui.layered.Layer;
+import de.clickism.fgui.api.gui.layered.LayeredGui;
 import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;

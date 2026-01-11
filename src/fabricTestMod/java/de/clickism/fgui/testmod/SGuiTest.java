@@ -1,14 +1,14 @@
 package de.clickism.fgui.testmod;
 
 import com.mojang.brigadier.context.CommandContext;
-import eu.pb4.sgui.api.ClickType;
-import eu.pb4.sgui.api.GuiHelpers;
-import eu.pb4.sgui.api.ScreenProperty;
-import eu.pb4.sgui.api.elements.*;
-import eu.pb4.sgui.api.gui.*;
-import eu.pb4.sgui.api.gui.layered.Layer;
-import eu.pb4.sgui.api.gui.layered.LayerView;
-import eu.pb4.sgui.api.gui.layered.LayeredGui;
+import de.clickism.fgui.api.ClickType;
+import de.clickism.fgui.api.GuiHelpers;
+import de.clickism.fgui.api.ScreenProperty;
+import de.clickism.fgui.api.elements.*;
+import de.clickism.fgui.api.gui.*;
+import de.clickism.fgui.api.gui.layered.Layer;
+import de.clickism.fgui.api.gui.layered.LayerView;
+import de.clickism.fgui.api.gui.layered.LayeredGui;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.ChatFormatting;

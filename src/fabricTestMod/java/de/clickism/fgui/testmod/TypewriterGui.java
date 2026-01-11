@@ -1,7 +1,7 @@
 package de.clickism.fgui.testmod;
 
-import eu.pb4.sgui.api.elements.BookElementBuilder;
-import eu.pb4.sgui.api.gui.BookGui;
+import de.clickism.fgui.api.elements.BookElementBuilder;
+import de.clickism.fgui.api.gui.BookGui;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
