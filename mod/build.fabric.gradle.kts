@@ -2,8 +2,7 @@ plugins {
 	id("net.fabricmc.fabric-loom-remap") version "1.14-SNAPSHOT"
 	id("maven-publish")
 	id("signing")
-	id("com.gradleup.nmcp") version "1.4.3"
-	id("com.gradleup.nmcp.aggregation") version "1.4.3"
+	id("com.gradleup.nmcp")
 }
 
 java {
@@ -38,7 +37,7 @@ base {
 
 loom {
 	if (stonecutter.eval(stonecutter.current.version, ">=1.21.10")) {
-		accessWidenerPath.set(rootProject.file("src/main/resources/fgui.accesswidener"))
+		accessWidenerPath.set(rootProject.file("mod/src/main/resources/fgui.accesswidener"))
 	}
 }
 
@@ -78,22 +77,6 @@ stonecutter {
 		string(current.parsed < "1.21.11") {
 			replace("Identifier", "ResourceLocation")
 		}
-	}
-}
-
-// Publishing Setup
-dependencies {
-	// Use allprojects as ncmp-settings plugin does not work with stonecutter?
-	allprojects {
-		nmcpAggregation(project(path))
-	}
-}
-
-nmcpAggregation {
-	centralPortal {
-		username = providers.gradleProperty("ossrhUsername").orNull
-		password = providers.gradleProperty("ossrhPassword").orNull
-		publishingType = "USER_MANAGED"
 	}
 }
 

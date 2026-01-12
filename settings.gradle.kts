@@ -10,9 +10,12 @@ plugins {
     id("dev.kikugie.stonecutter") version "0.8.2"
 }
 
+include("mod")
+
 stonecutter {
     kotlinController = true
-    create(rootProject) {
+    centralScript = "build.gradle.kts"
+    create(project(":mod")) {
         fun version(version: String, vararg loaders: String) {
             loaders.forEach {
                 this.version("$version-$it", version)

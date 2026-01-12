@@ -2,7 +2,7 @@ plugins {
     id("net.neoforged.moddev") version "2.0.137"
     id("maven-publish")
     id("signing")
-    id("com.gradleup.nmcp") version "1.4.3"
+    id("com.gradleup.nmcp")
 }
 
 val modVersion = project.property("mod.version").toString()
@@ -26,7 +26,7 @@ base {
 neoForge {
     version = property("deps.neoforge").toString()
     if (stonecutter.eval(stonecutter.current.version, ">=1.21.10")) {
-        accessTransformers.from(rootProject.file("src/main/resources/META-INF/accesstransformer.cfg"))
+        accessTransformers.from(rootProject.file("mod/src/main/resources/META-INF/accesstransformer.cfg"))
     }
 
     val runDir = "../../run"
@@ -56,6 +56,7 @@ tasks.named("createMinecraftArtifacts") {
 }
 
 java {
+    withSourcesJar()
     withJavadocJar()
 }
 
