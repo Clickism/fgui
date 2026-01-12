@@ -1,6 +1,9 @@
 plugins {
 	id("net.fabricmc.fabric-loom-remap") version "1.14-SNAPSHOT"
 	id("maven-publish")
+	id("signing")
+	id("com.gradleup.nmcp") version "1.4.3"
+	id("com.gradleup.nmcp.aggregation") version "1.4.3"
 }
 
 java {
@@ -8,6 +11,11 @@ java {
 	targetCompatibility = JavaVersion.VERSION_21
 	// Loom automatically attaches sourcesJar to RemapSourcesJar and "build"
 	withSourcesJar()
+	withJavadocJar()
+}
+
+tasks.withType<Javadoc>().configureEach {
+	isFailOnError = false
 }
 
 val modVersion = project.property("mod.version").toString()
@@ -73,7 +81,21 @@ stonecutter {
 	}
 }
 
-val env = System.getenv()
+// Publishing Setup
+dependencies {
+	// Use allprojects as ncmp-settings plugin does not work with stonecutter?
+	allprojects {
+		nmcpAggregation(project(path))
+	}
+}
+
+nmcpAggregation {
+	centralPortal {
+		username = providers.gradleProperty("ossrhUsername").orNull
+		password = providers.gradleProperty("ossrhPassword").orNull
+		publishingType = "USER_MANAGED"
+	}
+}
 
 publishing {
 	publications {
@@ -82,21 +104,33 @@ publishing {
 			groupId = group.toString()
 			artifactId = archivesBaseName
 			version = fullVersion
-		}
-	}
-
-	repositories {
-		if (env["MAVEN_URL"] != null) {
-			maven {
-				url = uri(env["MAVEN_URL"]!!)
-				credentials {
-					username = env["MAVEN_USERNAME"]
-					password = env["MAVEN_PASSWORD"]
+			pom {
+				name.set("fgui")
+				description.set("Library for creating custom, server side guis on Fabric/Neoforge")
+				url.set("https://github.com/Clickism/fgui")
+				licenses {
+					license {
+						name.set("GNU General Public License v3.0")
+						url.set("https://www.gnu.org/licenses/gpl-3.0.html")
+					}
+				}
+				developers {
+					developer {
+						id.set("Clickism")
+						name.set("Clickism")
+						email.set("dev@clickism.de")
+					}
+				}
+				scm {
+					connection.set("scm:git:git://github.com/Clickism/fgui.git")
+					developerConnection.set("scm:git:ssh://github.com/Clickism/fgui.git")
+					url.set("https://github.com/Clickism/fgui")
 				}
 			}
-		} else {
-			mavenLocal()
 		}
+	}
+	signing {
+		sign(publishing.publications["mavenJava"])
 	}
 }
 

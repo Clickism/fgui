@@ -1,6 +1,8 @@
 plugins {
     id("net.neoforged.moddev") version "2.0.137"
     id("maven-publish")
+    id("signing")
+    id("com.gradleup.nmcp") version "1.4.3"
 }
 
 val modVersion = project.property("mod.version").toString()
@@ -54,7 +56,11 @@ tasks.named("createMinecraftArtifacts") {
 }
 
 java {
-    withSourcesJar()
+    withJavadocJar()
+}
+
+tasks.withType<Javadoc>().configureEach {
+    isFailOnError = false
 }
 
 tasks.processResources {
@@ -77,7 +83,7 @@ stonecutter {
     }
 }
 
-val env = System.getenv()
+// Publishing Configuration
 
 publishing {
     publications {
@@ -86,19 +92,32 @@ publishing {
             groupId = group.toString()
             artifactId = archivesBaseName
             version = fullVersion
-        }
-    }
-    repositories {
-        if (env["MAVEN_URL"] != null) {
-            maven {
-                url = uri(env["MAVEN_URL"]!!)
-                credentials {
-                    username = env["MAVEN_USERNAME"]
-                    password = env["MAVEN_PASSWORD"]
+            pom {
+                name.set("fgui")
+                description.set("Library for creating custom, server side guis on Fabric/Neoforge")
+                url.set("https://github.com/Clickism/fgui")
+                licenses {
+                    license {
+                        name.set("GNU General Public License v3.0")
+                        url.set("https://www.gnu.org/licenses/gpl-3.0.html")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("Clickism")
+                        name.set("Clickism")
+                        email.set("dev@clickism.de")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/Clickism/fgui.git")
+                    developerConnection.set("scm:git:ssh://github.com/Clickism/fgui.git")
+                    url.set("https://github.com/Clickism/fgui")
                 }
             }
-        } else {
-            mavenLocal()
         }
+    }
+    signing {
+        sign(publishing.publications["mavenJava"])
     }
 }
