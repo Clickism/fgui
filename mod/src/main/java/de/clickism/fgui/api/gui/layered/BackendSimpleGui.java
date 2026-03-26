@@ -15,11 +15,11 @@ class BackendSimpleGui extends SimpleGui {
     }
 
     @Override
-    public boolean onAnyClick(int index, ClickType type, net.minecraft.world.inventory.ClickType action) {
+    public boolean onAnyClick(int index, ClickType type, net.minecraft.world.inventory.ContainerInput action) {
         return this.gui.onAnyClick(index, type, action);
     }
     @Override
-    public boolean onClick(int index, ClickType type, net.minecraft.world.inventory.ClickType action, GuiElementInterface element) {
+    public boolean onClick(int index, ClickType type, net.minecraft.world.inventory.ContainerInput action, GuiElementInterface element) {
         return this.gui.onClick(index, type, action, element);
     }
 

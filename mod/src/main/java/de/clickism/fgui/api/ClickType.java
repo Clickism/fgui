@@ -56,7 +56,7 @@ public enum ClickType {
         this.isDragging = isDragging;
     }
 
-    public static ClickType toClickType(net.minecraft.world.inventory.ClickType action, int button, int slot) {
+    public static ClickType toClickType(net.minecraft.world.inventory.ContainerInput action, int button, int slot) {
         switch (action) {
             case PICKUP:
                 return button == 0 ? MOUSE_LEFT : MOUSE_RIGHT;

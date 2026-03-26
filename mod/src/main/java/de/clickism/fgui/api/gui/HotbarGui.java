@@ -104,7 +104,7 @@ public class HotbarGui extends BaseSlotGui {
     }
 
     @Override
-    public boolean click(int index, ClickType type, net.minecraft.world.inventory.ClickType action) {
+    public boolean click(int index, ClickType type, net.minecraft.world.inventory.ContainerInput action) {
         if (index >= 0 && index < SIZE) {
             return super.click(VANILLA_TO_GUI_IDS[index], type, action);
         }
@@ -174,9 +174,9 @@ public class HotbarGui extends BaseSlotGui {
      */
     public void onClickItem() {
         if (this.player.isShiftKeyDown()) {
-            this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_RIGHT_SHIFT, net.minecraft.world.inventory.ClickType.QUICK_MOVE);
+            this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_RIGHT_SHIFT, net.minecraft.world.inventory.ContainerInput.QUICK_MOVE);
         } else {
-            this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_RIGHT, net.minecraft.world.inventory.ClickType.PICKUP);
+            this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_RIGHT, net.minecraft.world.inventory.ContainerInput.PICKUP);
         }
     }
 
@@ -186,9 +186,9 @@ public class HotbarGui extends BaseSlotGui {
      */
     public boolean onHandSwing() {
         if (this.player.isShiftKeyDown()) {
-            this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_LEFT_SHIFT, net.minecraft.world.inventory.ClickType.QUICK_MOVE);
+            this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_LEFT_SHIFT, net.minecraft.world.inventory.ContainerInput.QUICK_MOVE);
         } else {
-            this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_LEFT, net.minecraft.world.inventory.ClickType.PICKUP);
+            this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_LEFT, net.minecraft.world.inventory.ContainerInput.PICKUP);
         }
         return false;
     }
@@ -199,9 +199,9 @@ public class HotbarGui extends BaseSlotGui {
      */
     public boolean onClickBlock(BlockHitResult hitResult) {
         if (this.player.isShiftKeyDown()) {
-            this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_RIGHT_SHIFT, net.minecraft.world.inventory.ClickType.QUICK_MOVE);
+            this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_RIGHT_SHIFT, net.minecraft.world.inventory.ContainerInput.QUICK_MOVE);
         } else {
-            this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_RIGHT, net.minecraft.world.inventory.ClickType.PICKUP);
+            this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_RIGHT, net.minecraft.world.inventory.ContainerInput.PICKUP);
         }
 
         return false;
@@ -213,16 +213,16 @@ public class HotbarGui extends BaseSlotGui {
      */
     public boolean onPlayerAction(ServerboundPlayerActionPacket.Action action, Direction direction) {
         switch (action) {
-            case DROP_ITEM -> this.tickLimitedClick(this.selectedSlot, ClickType.DROP, net.minecraft.world.inventory.ClickType.THROW);
-            case DROP_ALL_ITEMS -> this.tickLimitedClick(this.selectedSlot, ClickType.CTRL_DROP, net.minecraft.world.inventory.ClickType.THROW);
+            case DROP_ITEM -> this.tickLimitedClick(this.selectedSlot, ClickType.DROP, net.minecraft.world.inventory.ContainerInput.THROW);
+            case DROP_ALL_ITEMS -> this.tickLimitedClick(this.selectedSlot, ClickType.CTRL_DROP, net.minecraft.world.inventory.ContainerInput.THROW);
             case STOP_DESTROY_BLOCK -> {
                 if (this.player.isShiftKeyDown()) {
-                    this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_LEFT_SHIFT, net.minecraft.world.inventory.ClickType.QUICK_MOVE);
+                    this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_LEFT_SHIFT, net.minecraft.world.inventory.ContainerInput.QUICK_MOVE);
                 } else {
-                    this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_LEFT, net.minecraft.world.inventory.ClickType.PICKUP);
+                    this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_LEFT, net.minecraft.world.inventory.ContainerInput.PICKUP);
                 }
             }
-            case SWAP_ITEM_WITH_OFFHAND -> this.tickLimitedClick(this.selectedSlot, ClickType.OFFHAND_SWAP, net.minecraft.world.inventory.ClickType.SWAP);
+            case SWAP_ITEM_WITH_OFFHAND -> this.tickLimitedClick(this.selectedSlot, ClickType.OFFHAND_SWAP, net.minecraft.world.inventory.ContainerInput.SWAP);
         }
 
         return false;
@@ -235,15 +235,15 @@ public class HotbarGui extends BaseSlotGui {
     public boolean onClickEntity(int entityId, EntityInteraction type, boolean isSneaking, @Nullable Vec3 interactionPos) {
         if (type == EntityInteraction.ATTACK) {
             if (isSneaking) {
-                this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_LEFT_SHIFT, net.minecraft.world.inventory.ClickType.QUICK_MOVE);
+                this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_LEFT_SHIFT, net.minecraft.world.inventory.ContainerInput.QUICK_MOVE);
             } else {
-                this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_LEFT, net.minecraft.world.inventory.ClickType.PICKUP);
+                this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_LEFT, net.minecraft.world.inventory.ContainerInput.PICKUP);
             }
         } else {
             if (isSneaking) {
-                this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_RIGHT_SHIFT, net.minecraft.world.inventory.ClickType.QUICK_MOVE);
+                this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_RIGHT_SHIFT, net.minecraft.world.inventory.ContainerInput.QUICK_MOVE);
             } else {
-                this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_RIGHT, net.minecraft.world.inventory.ClickType.PICKUP);
+                this.tickLimitedClick(this.selectedSlot, ClickType.MOUSE_RIGHT, net.minecraft.world.inventory.ContainerInput.PICKUP);
             }
         }
         return false;
@@ -269,7 +269,7 @@ public class HotbarGui extends BaseSlotGui {
     }
 
     @ApiStatus.Internal
-    private void tickLimitedClick(int selectedSlot, ClickType type, net.minecraft.world.inventory.ClickType actionType) {
+    private void tickLimitedClick(int selectedSlot, ClickType type, net.minecraft.world.inventory.ContainerInput actionType) {
         if (this.clicksPerTick == 0) {
             this.click(GUI_TO_VANILLA_IDS[selectedSlot], type, actionType);
         }

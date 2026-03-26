@@ -22,13 +22,14 @@ stonecutter {
                     .buildscript = "build.$it.gradle.kts"
             }
         }
+        version("26.1", "fabric+noremap")
         version("1.21.11", "fabric", "neoforge")
         version("1.21.10", "fabric", "neoforge")
         version("1.21.8", "fabric", "neoforge")
         version("1.21.5", "fabric", "neoforge")
         version("1.21.4", "fabric", "neoforge")
         version("1.21.1", "fabric", "neoforge")
-        vcsVersion = "1.21.11-fabric"
+        vcsVersion = "26.1-fabric+noremap"
     }
 }
 

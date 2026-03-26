@@ -77,6 +77,9 @@ stonecutter {
 		string(current.parsed < "1.21.11") {
 			replace("Identifier", "ResourceLocation")
 		}
+		string(current.parsed < "26.1") {
+			replace("net.minecraft.world.inventory.ContainerInput", "net.minecraft.world.inventory.ClickType")
+		}
 	}
 }
 

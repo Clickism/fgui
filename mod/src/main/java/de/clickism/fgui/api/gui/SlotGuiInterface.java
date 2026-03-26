@@ -28,11 +28,11 @@ public interface SlotGuiInterface extends SlotHolder, GuiInterface {
     /**
      * Used internally to receive clicks from the client.
      *
-     * @see SlotGuiInterface#onClick(int, ClickType, net.minecraft.world.inventory.ClickType, GuiElementInterface)
-     * @see SlotGuiInterface#onAnyClick(int, ClickType, net.minecraft.world.inventory.ClickType)
+     * @see SlotGuiInterface#onClick(int, ClickType, net.minecraft.world.inventory.ContainerInput, GuiElementInterface)
+     * @see SlotGuiInterface#onAnyClick(int, ClickType, net.minecraft.world.inventory.ContainerInput)
      */
     @ApiStatus.Internal
-    default boolean click(int index, ClickType type, net.minecraft.world.inventory.ClickType action) {
+    default boolean click(int index, ClickType type, net.minecraft.world.inventory.ContainerInput action) {
         GuiElementInterface element = this.getSlot(index);
         if (element != null) {
             element.getGuiCallback().click(index, type, action, this);
@@ -48,7 +48,7 @@ public interface SlotGuiInterface extends SlotHolder, GuiInterface {
      * @param action Minecraft's Slot Action Type
      * @return <code>true</code> if to allow manipulation of redirected slots, otherwise <code>false</code>
      */
-    default boolean onAnyClick(int index, ClickType type, net.minecraft.world.inventory.ClickType action) {
+    default boolean onAnyClick(int index, ClickType type, net.minecraft.world.inventory.ContainerInput action) {
         return true;
     }
 
@@ -61,7 +61,7 @@ public interface SlotGuiInterface extends SlotHolder, GuiInterface {
      * @param element Clicked GuiElement
      * @return Returns false, for automatic handling and syncing or true, if you want to do it manually
      */
-    default boolean onClick(int index, ClickType type, net.minecraft.world.inventory.ClickType action, GuiElementInterface element) {
+    default boolean onClick(int index, ClickType type, net.minecraft.world.inventory.ContainerInput action, GuiElementInterface element) {
         return false;
     }
 

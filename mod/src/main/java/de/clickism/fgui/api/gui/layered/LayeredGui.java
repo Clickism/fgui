@@ -166,13 +166,13 @@ public class LayeredGui implements SlotGuiInterface {
     }
 
 
-    public boolean onAnyClick(int index, ClickType type, net.minecraft.world.inventory.ClickType action) {
+    public boolean onAnyClick(int index, ClickType type, net.minecraft.world.inventory.ContainerInput action) {
         return true;
     }
 
     @Deprecated
     @ApiStatus.Internal
-    public boolean click(int index, ClickType type, net.minecraft.world.inventory.ClickType action) {
+    public boolean click(int index, ClickType type, net.minecraft.world.inventory.ContainerInput action) {
         return false;
     }
 

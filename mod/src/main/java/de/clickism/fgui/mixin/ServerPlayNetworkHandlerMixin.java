@@ -89,7 +89,7 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketLi
                 var button = packet.buttonNum();
                 var stateId = packet.stateId();
                 var changedSlots = packet.changedSlots();
-                var clickType = packet.clickType();
+                var clickType = inputOf(packet);
                 var carriedItem = packet.carriedItem();
                 //?} else {
                 /*var slot = packet.getSlotNum();
@@ -150,7 +150,7 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketLi
                 //? if >=1.21.5 {
                 var slot = packet.slotNum();
                 var button = packet.buttonNum();
-                var clickType = packet.clickType();
+                var clickType = inputOf(packet);
                 //?} else {
                 /*var slot = packet.getSlotNum();
                 var button = packet.getButtonNum();
@@ -360,7 +360,7 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketLi
         if (this.player.containerMenu instanceof HotbarScreenHandler handler) {
             var gui = handler.getGui();
             var buf = new FriendlyByteBuf(Unpooled.buffer());
-            ((PlayerInteractEntityC2SPacketAccessor) packet).invokeWrite(buf);
+            ((PlayerInteractEntityC2SPacketAccessor) ((Object) packet)).invokeWrite(buf);
 
             int entityId = buf.readVarInt();
             var type = buf.readEnum(HotbarGui.EntityInteraction.class);
@@ -419,5 +419,14 @@ public abstract class ServerPlayNetworkHandlerMixin extends ServerCommonPacketLi
                 handler.getGui().handleException(e);
             }
         }
+    }
+
+    private net.minecraft.world.inventory.ContainerInput inputOf(ServerboundContainerClickPacket packet) {
+        //? if >=26.1 {
+        return packet.containerInput();
+        //?} elif >=1.21.5 {
+        /*return packet.clickType();
+        *///?} else
+        //return packet.getClickType();
     }
 }
