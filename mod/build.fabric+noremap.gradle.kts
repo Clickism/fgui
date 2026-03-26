@@ -50,7 +50,8 @@ tasks.processResources {
         "mod_version" to version,
         "minecraft_version" to project.property("mod.minecraft_version"),
         "minecraft_version_range" to project.property("mod.minecraft_version_range"),
-        "fabric_loader_version" to project.property("deps.fabric_loader")
+        "fabric_loader_version" to project.property("deps.fabric_loader"),
+        "aw_path" to "fgui+noremap.accesswidener"
     )
     filesMatching("fabric.mod.json") {
         expand(props)

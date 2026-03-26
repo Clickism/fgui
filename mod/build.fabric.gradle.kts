@@ -53,7 +53,8 @@ tasks.processResources {
 		"mod_version" to version,
 		"minecraft_version" to project.property("mod.minecraft_version"),
 		"minecraft_version_range" to project.property("mod.minecraft_version_range"),
-		"fabric_loader_version" to project.property("deps.fabric_loader")
+		"fabric_loader_version" to project.property("deps.fabric_loader"),
+		"aw_path" to "fgui.accesswidener"
 	)
 	filesMatching("fabric.mod.json") {
 		expand(props)
@@ -74,11 +75,11 @@ tasks.jar {
 
 stonecutter {
 	replacements {
+		string(true) {
+			replace("net.minecraft.world.inventory.ContainerInput", "net.minecraft.world.inventory.ClickType")
+		}
 		string(current.parsed < "1.21.11") {
 			replace("Identifier", "ResourceLocation")
-		}
-		string(current.parsed < "26.1") {
-			replace("net.minecraft.world.inventory.ContainerInput", "net.minecraft.world.inventory.ClickType")
 		}
 	}
 }

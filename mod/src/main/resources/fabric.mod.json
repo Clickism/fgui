@@ -22,7 +22,7 @@
   "entrypoints": {
 
   },
-  "accessWidener": "fgui.accesswidener",
+  "accessWidener": "${aw_path}",
   "mixins": [
     "fgui.mixins.json"
   ],

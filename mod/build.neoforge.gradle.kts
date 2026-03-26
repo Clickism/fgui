@@ -78,6 +78,9 @@ tasks.processResources {
 
 stonecutter {
     replacements {
+        string(true) {
+            replace("net.minecraft.world.inventory.ContainerInput", "net.minecraft.world.inventory.ClickType")
+        }
         string(current.parsed < "1.21.11") {
             replace("Identifier", "ResourceLocation")
         }
